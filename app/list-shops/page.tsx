@@ -1,0 +1,1 @@
+import{SiteShell}from'@/components/site-shell';import{DirectoryPage}from'@/components/directory-page';import{allShops,categories}from'@/lib/autoheads-data';export default function Page(){return <SiteShell><DirectoryPage kind="Spares" items={allShops} categories={categories}/></SiteShell>}
