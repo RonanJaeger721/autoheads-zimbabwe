@@ -1,1 +1,1 @@
-export{default}from'../list-shops/page';
+export { default } from "../list-shops/page";

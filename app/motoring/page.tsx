@@ -1,1 +1,1 @@
-export{default}from'../list-posts/page';
+export { default } from "../list-motoring-tips/page";

@@ -1,1 +1,87 @@
-import Link from'next/link';import{ArrowLeft,Globe2,Mail,MapPin,Phone}from'lucide-react';import{SiteShell}from'@/components/site-shell';import{mechanics,shops}from'@/lib/autoheads-data';export default async function Page({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const all=[...shops,...mechanics];const business=all.find(s=>s.name.toLowerCase().replaceAll(' ','-').replaceAll('&','and')===slug)??all[0];const isWorkshop=mechanics.some(x=>x.name===business.name);return <SiteShell><main className="business-page"><div className="business-hero"><div className="crumbs"><Link href="/">Home</Link><span>/</span><Link href={isWorkshop?'/workshops':'/spares'}>{isWorkshop?'Workshops':'Spares'}</Link><span>/</span><b>{business.name}</b></div><span>{isWorkshop?'AUTOMOTIVE WORKSHOP':'SPARES SUPPLIER'} / ZIMBABWE</span><h1>{business.name}</h1><div className="business-tags">{business.tags.map(x=><span key={x}>{x}</span>)}</div></div><section className="business-profile"><aside><small>ADDRESS</small><p><MapPin/>{business.address}</p><small>CONTACT</small><p><Phone/>{business.phone}</p></aside><div><h2>Contact this {isWorkshop?'workshop':'supplier'}.</h2><p>This profile contains only information available in the audited Autoheads directory snapshot. Hours, ratings and reviews are not shown because they were not available.</p><div className="profile-actions"><a href={`tel:${business.phone}`}><Phone/>Call</a><button><Mail/>Email</button><button><Globe2/>Website</button><a target="_blank" rel="noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}><MapPin/>Directions</a></div><Link className="back-directory" href={isWorkshop?'/workshops':'/spares'}><ArrowLeft/>Back to all {isWorkshop?'workshops':'suppliers'}</Link></div></section></main></SiteShell>}
+import Link from "next/link";
+import { ArrowLeft, MapPin, Phone } from "lucide-react";
+import { SiteShell } from "@/components/site-shell";
+import {
+  sourceMechanics,
+  sourceShops,
+  sourceWorkshops,
+} from "@/lib/source-directory-data";
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const all = [
+    ...sourceShops.map((x) => ({ ...x, kind: "supplier" })),
+    ...sourceMechanics.map((x) => ({ ...x, kind: "mechanic" })),
+    ...sourceWorkshops.map((x) => ({ ...x, kind: "workshop" })),
+  ];
+  const business =
+    all.find(
+      (s) =>
+        s.name.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and") ===
+        slug,
+    ) ?? all[0];
+  const back =
+    business.kind === "supplier"
+      ? "/list-shops"
+      : business.kind === "mechanic"
+        ? "/list-mechanics"
+        : "/workshops";
+  return (
+    <SiteShell>
+      <main className="business-page">
+        <div className="business-hero">
+          <div className="crumbs">
+            <Link href="/">Home</Link>
+            <span>/</span>
+            <Link href={back}>{business.kind}</Link>
+            <span>/</span>
+            <b>{business.name}</b>
+          </div>
+          <span>
+            {business.kind.toUpperCase()} / AUTOHEADS SOURCE DIRECTORY
+          </span>
+          <h1>{business.name}</h1>
+          <div className="business-tags">
+            {business.tags.map((x) => (
+              <span key={x}>{x}</span>
+            ))}
+          </div>
+        </div>
+        <section className="business-profile">
+          <aside>
+            <small>ADDRESS</small>
+            <p>
+              <MapPin />
+              {business.address || "Address not supplied"}
+            </p>
+            {business.phone && (
+              <>
+                <small>CONTACT</small>
+                <p>
+                  <Phone />
+                  {business.phone}
+                </p>
+              </>
+            )}
+          </aside>
+          <div>
+            <h2>Directory information.</h2>
+            <p>{business.details}</p>
+            <p>
+              This listing preserves the business name, services and address
+              published by Autoheads. Contact details are only shown when they
+              were available in the source record.
+            </p>
+            <Link className="back-directory" href={back}>
+              <ArrowLeft />
+              Back to all {business.kind}s
+            </Link>
+          </div>
+        </section>
+      </main>
+    </SiteShell>
+  );
+}

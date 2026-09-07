@@ -1,3 +1,87 @@
-'use client';
-import Link from'next/link';import{ArrowRight}from'lucide-react';import{Tabs,TabsContent,TabsList,TabsTrigger}from'@/components/ui/tabs';import{categories,vehicles}from'@/lib/autoheads-data';
-export function VehicleTabs({makeId,vehicleId,intro}:{makeId:string;vehicleId:string;intro:string}){const related=vehicles.filter(x=>x.makeId===makeId&&x.id!==vehicleId);return <Tabs defaultValue="overview" className="vehicle-tabs"><TabsList variant="line"><TabsTrigger value="overview">Overview</TabsTrigger><TabsTrigger value="maintenance">Maintenance</TabsTrigger><TabsTrigger value="reviews">Reviews</TabsTrigger><TabsTrigger value="related">Related</TabsTrigger><TabsTrigger value="spares">Spares</TabsTrigger></TabsList><TabsContent value="overview"><h2>At a glance</h2><p>{intro} The complete Autoheads description connects here from the current vehicle record.</p></TabsContent><TabsContent value="maintenance"><h2>Maintenance advice</h2><div className="maintenance-note"><b>AUTOHEADS MAINTENANCE NOTE</b><p>Original maintenance advice belongs here unchanged. Confirm manufacturer specifications before acting on fluid, interval or compatibility guidance.</p></div></TabsContent><TabsContent value="reviews"><h2>Owner reviews</h2><p>Existing authenticated reviews will appear here when the production account and review service is connected. No reviews or ratings have been fabricated.</p></TabsContent><TabsContent value="related"><h2>You may also like</h2><div className="tab-related">{related.map(v=><Link key={v.id} href={`/vehicle/${v.makeId}/${v.id}`}>{v.make} <b>{v.name}</b><ArrowRight/></Link>)}</div></TabsContent><TabsContent value="spares"><h2>Looking after this car?</h2><div className="spare-shortcuts">{categories.filter(x=>['Brake Pads','Filters','Suspension','Engine Spares','Tyres'].includes(x)).map(x=><Link key={x} href={`/list-shops?q=${encodeURIComponent(x)}`}>{x}<ArrowRight/></Link>)}</div></TabsContent></Tabs>}
+"use client";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { categories, vehicles } from "@/lib/autoheads-data";
+export function VehicleTabs({
+  makeId,
+  vehicleId,
+  intro,
+}: {
+  makeId: string;
+  vehicleId: string;
+  intro: string;
+}) {
+  const related = vehicles.filter(
+    (x) => x.makeId === makeId && x.id !== vehicleId,
+  );
+  return (
+    <Tabs defaultValue="overview" className="vehicle-tabs">
+      <TabsList variant="line">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
+        <TabsTrigger value="reviews">Reviews</TabsTrigger>
+        <TabsTrigger value="related">Related</TabsTrigger>
+        <TabsTrigger value="spares">Spares</TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview">
+        <h2>At a glance</h2>
+        <p>
+          {intro} The complete Autoheads description connects here from the
+          current vehicle record.
+        </p>
+      </TabsContent>
+      <TabsContent value="maintenance">
+        <h2>Maintenance advice</h2>
+        <div className="maintenance-note">
+          <b>AUTOHEADS MAINTENANCE NOTE</b>
+          <p>
+            Original maintenance advice belongs here unchanged. Confirm
+            manufacturer specifications before acting on fluid, interval or
+            compatibility guidance.
+          </p>
+        </div>
+      </TabsContent>
+      <TabsContent value="reviews">
+        <h2>Owner reviews</h2>
+        <p>
+          Existing authenticated reviews will appear here when the production
+          account and review service is connected. No reviews or ratings have
+          been fabricated.
+        </p>
+      </TabsContent>
+      <TabsContent value="related">
+        <h2>You may also like</h2>
+        <div className="tab-related">
+          {related.map((v) => (
+            <Link key={v.id} href={`/vehicle/${v.makeId}/${v.id}`}>
+              {v.make} <b>{v.name}</b>
+              <ArrowRight />
+            </Link>
+          ))}
+        </div>
+      </TabsContent>
+      <TabsContent value="spares">
+        <h2>Looking after this car?</h2>
+        <div className="spare-shortcuts">
+          {categories
+            .filter((x) =>
+              [
+                "Brake Pads",
+                "Filters",
+                "Suspension",
+                "Engine Spares",
+                "Tyres",
+              ].includes(x),
+            )
+            .map((x) => (
+              <Link key={x} href={`/list-shops?q=${encodeURIComponent(x)}`}>
+                {x}
+                <ArrowRight />
+              </Link>
+            ))}
+        </div>
+      </TabsContent>
+    </Tabs>
+  );
+}

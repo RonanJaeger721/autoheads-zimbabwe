@@ -1,1 +1,24 @@
-import Link from'next/link';import{ArrowRight}from'lucide-react';import{SiteShell}from'@/components/site-shell';import{makes}from'@/lib/autoheads-data';export default function Page(){return <SiteShell><main className="index-page"><span>AUTOHEADS VEHICLE LIBRARY</span><h1>Vehicle makes.</h1><p>Know more about your car of choice.</p><div className="make-index">{makes.map(([id,name],i)=><Link href={`/make/${id}`} key={id}><span>{String(i+1).padStart(2,'0')}</span><b>{name}</b><ArrowRight/></Link>)}</div></main></SiteShell>}
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { SiteShell } from "@/components/site-shell";
+import { makes } from "@/lib/autoheads-data";
+export default function Page() {
+  return (
+    <SiteShell>
+      <main className="index-page">
+        <span>AUTOHEADS VEHICLE LIBRARY</span>
+        <h1>Vehicle makes.</h1>
+        <p>Know more about your car of choice.</p>
+        <div className="make-index">
+          {makes.map(([id, name], i) => (
+            <Link href={`/make/${id}`} key={id}>
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              <b>{name}</b>
+              <ArrowRight />
+            </Link>
+          ))}
+        </div>
+      </main>
+    </SiteShell>
+  );
+}

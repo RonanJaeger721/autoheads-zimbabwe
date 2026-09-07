@@ -1,1 +1,59 @@
-import Image from'next/image';import Link from'next/link';import{ArrowRight}from'lucide-react';import{SiteShell}from'@/components/site-shell';import{posts}from'@/lib/autoheads-data';export default async function Page({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const id=slug.startsWith('view-')?slug.slice(5):'';const p=posts.find(x=>x.id===id)??posts[0];return <SiteShell><main className="article-page"><header><small>{p.category}</small><h1>{p.title}</h1><p>{p.excerpt}</p></header><div className="article-image"><Image src={p.image} fill alt="Automotive product editorial artwork"/></div><article className="long-copy"><p>The complete published Autoheads article should be loaded here from its existing content source. This redesign intentionally does not generate replacement automotive guidance or alter the meaning of the original editorial.</p><h2>Built around informed ownership</h2><p>Clear information helps motorists compare products, ask better questions and make considered decisions. Always verify product suitability against manufacturer specifications.</p></article><Link className="article-utility" href="/list-shops?q=Lubricants">Looking for this product? <b>Find suppliers</b><ArrowRight/></Link></main></SiteShell>}
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { notFound } from "next/navigation";
+import { SiteShell } from "@/components/site-shell";
+import { motoringTips, posts } from "@/lib/autoheads-data";
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const isTip = slug.startsWith("view-motoring-tip-");
+  const id = slug.replace(isTip ? "view-motoring-tip-" : "view-", "");
+  const item = isTip
+    ? motoringTips.find((x) => x.id === id)
+    : posts.find((x) => x.id === id);
+  if (!item) notFound();
+  return (
+    <SiteShell>
+      <main className="article-page">
+        <header>
+          <small>
+            {item.category}
+            {"source" in item && item.source ? ` / SOURCE: ${item.source}` : ""}
+          </small>
+          <h1>{item.title}</h1>
+          <p>{item.excerpt}</p>
+        </header>
+        {!isTip && (
+          <div className="article-image">
+            <Image
+              src={"image" in item ? item.image : "/images/castrol.png"}
+              fill
+              alt="Autoheads editorial artwork"
+            />
+          </div>
+        )}
+        <article className="long-copy">
+          {"author" in item && item.author && (
+            <p>
+              <b>By {item.author}</b>
+            </p>
+          )}
+          {item.body.map((paragraph, i) => (
+            <p key={i}>{paragraph}</p>
+          ))}
+        </article>
+        <Link
+          className="article-utility"
+          href={isTip ? "/list-motoring-tips" : "/list-posts"}
+        >
+          Continue exploring <b>{isTip ? "motoring tips" : "Autoheads news"}</b>
+          <ArrowRight />
+        </Link>
+      </main>
+    </SiteShell>
+  );
+}

@@ -518,6 +518,11 @@ export const posts = [
     excerpt:
       "Castrol, represented in Zimbabwe by High Performance Lubes, introduces refreshed packaging.",
     image: "/images/castrol.png",
+    body: [
+      "Castrol, represented in Zimbabwe by High Performance Lubes, introduced new packaging for its small-pack products ranging from 500ml to 5L, effective from October 2021.",
+      "The new packs use 20% less plastic while being stronger than the previous packaging. Their shape also occupies less transport, warehouse and shelf space, while the contents remain the same.",
+      "Products using the new packaging include GTX, MAGNATEC, TRANSMAX, VECTON, Radicool, CRB and 2T.",
+    ],
   },
   {
     id: "1",
@@ -525,7 +530,94 @@ export const posts = [
     category: "Products and Brands",
     excerpt: "A closer look at a familiar heavy-duty lubricant product.",
     image: "/images/castrol.png",
+    body: [
+      "Castrol introduced the CRB brand of commercial-vehicle engine oil, replacing Tection. The green 20L and 5L packs appeared in local spares shops during 2021.",
+      "CRB addresses sludge, deposits and oil thickening caused by the high temperatures, pressure and combustion by-products inside an engine.",
+      "Castrol says CRB Multi and CRB Turbomax use cleaning agents, anti-oxidants and piston-deposit control to maintain viscosity and encourage longer engine life. Vehicle owners should always confirm the correct lubricant specification for their engine.",
+    ],
   },
+];
+export const motoringTips = [
+  {
+    id: "14",
+    title: "What Do I Really Need to Know About My Vehicle's Fuel System?",
+    category: "Fuel System",
+    source: "Bosch",
+    excerpt:
+      "Understand the tank, pumps, injectors, filters and sensors that deliver fuel efficiently.",
+    body: [
+      "A modern fuel system delivers precise amounts of fuel into the combustion chamber at the right time. Efficiency, response and emissions are managed through the ECU using information from multiple sensors.",
+      "Avoid running a diesel tank empty, use clean fuel and containers, and replace filters on time. Injector pumps and injectors are particularly sensitive to dirt and dry running.",
+      "Important sensors include oxygen, water temperature, mass airflow, throttle position, manifold pressure and crankshaft position sensors. Their signals help the ECU determine fuel quantity, pressure and timing.",
+    ],
+  },
+  {
+    id: "15",
+    title: "Engine Overhaul Can Be Avoided",
+    category: "Engine Overhaul",
+    excerpt:
+      "Timeous servicing, correct parts and the right oil can greatly extend engine life.",
+    body: [
+      "An engine can last far beyond a million kilometres when it is serviced on time, every time, with the correct parts and oil.",
+      "Moving metal components create friction and wear. Engine oil supplies a protective film between those surfaces, reducing friction, wear and repair costs.",
+    ],
+  },
+  {
+    id: "16",
+    title: "What Are The Basics of Engine Lubrication?",
+    category: "Lubrication",
+    source: "Mobil.com",
+    excerpt:
+      "Why quality oil, filtration and service intervals matter to every engine.",
+    body: [
+      "The pistons, camshaft, crankshaft and bearings move against one another with extremely small clearances. A strong oil film keeps those surfaces apart.",
+      "Combustion produces heat, soot, water and other by-products, making filtration and regular oil changes essential.",
+      "Use quality oil and filters that meet the engine manufacturer's specification, and service the vehicle at the recommended interval for its operating conditions.",
+    ],
+  },
+  {
+    id: "17",
+    title: "What does SAE15W40 mean for My Engine?",
+    category: "Lubrication",
+    author: "Gwinyai Mataruka",
+    excerpt:
+      "A practical explanation of viscosity, cold starts and multigrade engine oil.",
+    body: [
+      "Viscosity describes an oil's resistance to flow. Low-viscosity oil flows quickly during cold starting, while higher viscosity helps maintain a strong film at operating temperature.",
+      "Multigrade oils use viscosity-index improvers so one oil can behave differently at low and high temperatures. SAE15W40 behaves like an SAE15W oil when cold and an SAE40 oil when hot.",
+      "Always use the oil grade and specification recommended for your engine.",
+    ],
+  },
+  {
+    id: "18",
+    title: "Car Battery Care Basics",
+    category: "Battery Care",
+    excerpt:
+      "How the charging system, electrolyte, terminals and routine checks affect battery life.",
+    body: [
+      "The battery starts the engine and powers vehicle electronics. Once the engine runs, the alternator and regulator recharge it.",
+      "Have the battery and charging system checked at least twice a year. Open batteries also require electrolyte-level and density checks by a properly equipped technician.",
+      "Keep terminals clean, secure and protected. Hydrated copper sulphate can be removed with hot water, baking soda or vinegar. A well-maintained battery should generally last at least three years.",
+    ],
+  },
+  {
+    id: "19",
+    title: "Vehicle Suspension Basics",
+    category: "Suspension",
+    excerpt:
+      "Suspension determines comfort, control, braking stability and tyre life.",
+    body: [
+      "The suspension system combines springs, shocks, struts, bushes, control arms and other components to connect the car and its occupants to the road.",
+      "A sound suspension helps the vehicle track straight, brake predictably and remain controlled through curves or emergency swerves. A compromised system can make the vehicle difficult and dangerous to control.",
+      "Report unfamiliar noises and changes in handling early. Periodic wheel alignment is a practical way to obtain a broader assessment of suspension condition.",
+    ],
+  },
+];
+export const aboutCopy = [
+  "Everyone loves cars—well, almost. Autoheads loves them enough to care when they are mistreated, damaged by unqualified mechanics, fitted with poor-quality parts or sent to the scrapyard too early.",
+  "Autoheads is a local community of car lovers and enthusiasts, geographically and digitally connected. Members share experiences about cars, mechanics, garages, parts traders, brands, roads and places encountered along the journey.",
+  "By sharing knowledge, the community aims to reduce the cost of vehicle ownership: knowing what to buy, where to buy it, how to care for a car and how to find better service.",
+  "Wherever motorists travel, Autoheads exists to keep them connected to a knowledgeable local motoring community.",
 ];
 export const additionalShops = [
   "Oil Centre Zimbabwe",
