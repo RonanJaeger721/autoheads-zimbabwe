@@ -22,6 +22,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Link href="/list-mechanics">Mechanics</Link>
           <Link href="/workshops">Workshops</Link>
           <Link href="/motoring">Motoring</Link>
+          <Link href="/verified">Verified</Link>
           <Link href="/about">About</Link>
         </nav>
         <div className="nav-actions">
@@ -42,6 +43,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             <Link href="/list-mechanics">Mechanics</Link>
             <Link href="/workshops">Workshops</Link>
             <Link href="/motoring">Motoring</Link>
+            <Link href="/verified">Verified</Link>
             <Link href="/about">About</Link>
             <Link href="/login">Account</Link>
           </nav>
@@ -73,6 +75,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Link href="/list-mechanics">Mechanics</Link>
           <Link href="/workshops">Workshops</Link>
           <Link href="/motoring">Motoring</Link>
+          <Link href="/verified">Verified</Link>
           <Link href="/about">About</Link>
         </div>
         <div>

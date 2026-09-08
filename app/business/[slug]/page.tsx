@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, MapPin, Phone } from "lucide-react";
+import { ArrowLeft, MapPin, MessageCircle, Phone } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import {
   sourceMechanics,
@@ -29,6 +29,9 @@ export default async function Page({
       : business.kind === "mechanic"
         ? "/list-mechanics"
         : "/workshops";
+  const firstPhone=business.phone.split(',')[0];
+  const digits=firstPhone.replace(/\D/g,'');
+  const whatsapp=digits.startsWith('263')?digits:digits.startsWith('0')?`263${digits.slice(1)}`:digits;
   return (
     <SiteShell>
       <main className="business-page">
@@ -75,6 +78,11 @@ export default async function Page({
               published by Autoheads. Contact details are only shown when they
               were available in the source record.
             </p>
+            <div className="profile-actions">
+              {firstPhone?<a data-lead-action="call" href={`tel:${firstPhone}`}><Phone/>Call</a>:null}
+              {whatsapp?<a data-lead-action="whatsapp" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"><MessageCircle/>WhatsApp</a>:null}
+              <a data-lead-action="directions" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} target="_blank" rel="noreferrer"><MapPin/>Directions</a>
+            </div>
             <Link className="back-directory" href={back}>
               <ArrowLeft />
               Back to all {business.kind}s
