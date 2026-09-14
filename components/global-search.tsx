@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
-import { Search, ArrowUpRight } from "lucide-react";
+import { Search, ArrowUpRight, MapPin } from "lucide-react";
 import { useState } from "react";
 import { vehicles, shops, categories, posts } from "@/lib/autoheads-data";
 export function GlobalSearch() {
   const [q, setQ] = useState("");
+  const [intent, setIntent] = useState<"mechanic" | "spares">("mechanic");
+  const [location, setLocation] = useState("Harare");
   const n = q.trim().toLowerCase();
   const results = n
     ? [
@@ -41,7 +43,12 @@ export function GlobalSearch() {
       ].slice(0, 7)
     : [];
   return (
-    <div id="search" className="search-wrap">
+    <div id="search" className="nearby-search">
+      <div className="search-intent" aria-label="Choose what to find">
+        <button className={intent === "mechanic" ? "active" : ""} onClick={() => setIntent("mechanic")}>Mechanic</button>
+        <button className={intent === "spares" ? "active" : ""} onClick={() => setIntent("spares")}>Spares</button>
+      </div>
+      <div className="search-wrap">
       <Search size={24} />
       <label className="sr-only" htmlFor="global-search">
         Search Autoheads
@@ -50,11 +57,11 @@ export function GlobalSearch() {
         id="global-search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search a car, part, shop or service…"
+        placeholder={intent === "mechanic" ? "What service do you need?" : "What part do you need?"}
       />
-      <button aria-label="Search">
+      <Link aria-label="Find nearby" href={`${intent === "mechanic" ? "/list-mechanics" : "/list-shops"}?q=${encodeURIComponent(q)}&location=${encodeURIComponent(location)}`}>
         <ArrowUpRight />
-      </button>
+      </Link>
       {n && (
         <div className="search-results">
           {results.length ? (
@@ -70,6 +77,13 @@ export function GlobalSearch() {
           )}
         </div>
       )}
+      </div>
+      <label className="area-picker"><MapPin /> <span>Search area</span>
+        <select value={location} onChange={(e) => setLocation(e.target.value)}>
+          {['Harare','Bulawayo','Gweru','Mutare','Masvingo','Chitungwiza','Kwekwe','Kadoma','Marondera'].map((area) => <option key={area}>{area}</option>)}
+        </select>
+      </label>
+      <div className="search-trust"><span><i /> Area-matched results</span><Link href="/verified">How verification works</Link></div>
     </div>
   );
 }

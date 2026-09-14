@@ -7,6 +7,7 @@ export function AccountForm({
   mode: "login" | "register" | "apply";
 }) {
   const [done, setDone] = useState(false);
+  const [providerType, setProviderType] = useState("Spares supplier");
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setDone(true);
@@ -24,17 +25,16 @@ export function AccountForm({
         </h1>
         <p>
           {mode === "apply"
-            ? "Apply as a spares supplier or mechanic using the existing Autoheads provider flow."
+            ? "Create a listing request for a spares business, mechanic or workshop. Verification is reviewed separately before any badge is shown."
             : "Access reviews, contributions and your Autoheads profile."}
         </p>
       </section>
       <form onSubmit={submit}>
         {done ? (
           <div className="form-notice">
-            <b>Prototype form ready</b>
+            <b>Your application details are ready.</b>
             <p>
-              Submission will connect to the existing Autoheads account service
-              during backend integration.
+              This preview cannot send or retain applications yet. Production submission needs the Autoheads account service or database connected first; your details have not been claimed as submitted.
             </p>
           </div>
         ) : (
@@ -69,17 +69,27 @@ export function AccountForm({
                   <input required type="tel" name="phone" />
                 </label>
                 <label>
-                  Business type
-                  <select required>
-                    <option value="">Select type</option>
+                  I want to list
+                  <select required value={providerType} onChange={(e) => setProviderType(e.target.value)}>
                     <option>Spares supplier</option>
-                    <option>Mechanic / workshop</option>
+                    <option>Independent mechanic</option>
+                    <option>Workshop</option>
                   </select>
                 </label>
                 <label>
-                  Address
-                  <input required name="address" />
+                  Business or trading name
+                  <input required name="businessName" />
                 </label>
+                <label>
+                  Area / city
+                  <select required name="area" defaultValue="">
+                    <option value="" disabled>Select area</option>
+                    {['Harare','Bulawayo','Gweru','Mutare','Masvingo','Chitungwiza','Kwekwe','Kadoma','Marondera','Other'].map((area) => <option key={area}>{area}</option>)}
+                  </select>
+                </label>
+                <label>Physical address<input required name="address" /></label>
+                <label>Services or parts supplied<textarea required name="services" rows={4} placeholder={providerType === "Spares supplier" ? "e.g. Toyota suspension parts, filters, body panels" : "e.g. diagnostics, suspension, electrical repairs"} /></label>
+                <div className="application-note"><b>What happens next</b><p>Autoheads reviews the business details and evidence. Applying does not automatically make a listing verified.</p></div>
               </>
             )}
             <button>

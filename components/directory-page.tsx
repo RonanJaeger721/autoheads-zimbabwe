@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,6 +9,7 @@ import {
   Phone,
   SlidersHorizontal,
   X,
+  ShieldCheck,
 } from "lucide-react";
 type Listing = {
   name: string;
@@ -60,6 +61,13 @@ export function DirectoryPage({
     () => Array.from(new Set(items.map((x) => locationOf(x.address)))).sort(),
     [items],
   );
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("location");
+    const requestedQuery = params.get("q");
+    if (requested && locations.includes(requested)) setLocation(requested);
+    if (requestedQuery) setQ(requestedQuery);
+  }, [locations]);
   const filtered = useMemo(
     () =>
       items.filter(
@@ -208,7 +216,7 @@ export function DirectoryPage({
         </aside>
         <section className="results">
           <div className="results-meta">
-            <span>{filtered.length} source listings</span>
+            <span>{filtered.length} source listings{location !== "All" ? ` in ${location}` : ""}</span>
             <span>
               Page {current} of {pages}
             </span>
@@ -225,7 +233,10 @@ export function DirectoryPage({
                   {String((current - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
                 </div>
                 <div className="business-main">
-                  <small>{x.tags.join(" · ")}</small>
+                  <div className="listing-eyebrow">
+                    <small>{x.tags.join(" · ")}</small>
+                    <span className="verification-status"><ShieldCheck /> Not yet verified</span>
+                  </div>
                   <h2>
                     <Link href={`/business/${slug}`}>{x.name}</Link>
                   </h2>
