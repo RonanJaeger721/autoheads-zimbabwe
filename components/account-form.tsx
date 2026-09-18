@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { Building2, Check, MapPin, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 export function AccountForm({
   mode,
@@ -8,6 +9,7 @@ export function AccountForm({
 }) {
   const [done, setDone] = useState(false);
   const [providerType, setProviderType] = useState("Spares supplier");
+  const [accountType, setAccountType] = useState<"motorist" | "business">("business");
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setDone(true);
@@ -15,34 +17,47 @@ export function AccountForm({
   return (
     <main className="account-page">
       <section>
-        <span>AUTOHEADS ACCOUNT</span>
+        <span>{mode === "login" ? "BUSINESS PORTAL" : "JOIN AUTOHEADS"}</span>
         <h1>
           {mode === "login"
-            ? "Welcome back."
+            ? "Manage your place on the map."
             : mode === "register"
-              ? "Join the motoring community."
+              ? "Start with the right account."
               : "List your automotive business."}
         </h1>
         <p>
           {mode === "apply"
             ? "Create a listing request for a spares business, mechanic or workshop. Verification is reviewed separately before any badge is shown."
-            : "Access reviews, contributions and your Autoheads profile."}
+            : mode === "login"
+              ? "Sign in to manage your listing, location, contact details and verification application."
+              : "Motorists can save their preferences. Businesses can build a searchable provider profile."}
         </p>
+        <div className="account-benefits">
+          <span><MapPin /> Set your operating area</span>
+          <span><Building2 /> Manage business details</span>
+          <span><ShieldCheck /> Apply for verification</span>
+        </div>
       </section>
       <form onSubmit={submit}>
         {done ? (
           <div className="form-notice">
-            <b>Your application details are ready.</b>
+            <b>{mode === "apply" ? "Your application details are ready." : mode === "login" ? "Business sign-in is ready to connect." : "Your account details are ready."}</b>
             <p>
-              This preview cannot send or retain applications yet. Production submission needs the Autoheads account service or database connected first; your details have not been claimed as submitted.
+              The secure Autoheads account service still needs to be connected before this form can send or retain information. Your details have not been claimed as submitted.
             </p>
           </div>
         ) : (
           <>
+            {mode === "register" && (
+              <div className="account-type" role="group" aria-label="Choose account type">
+                <button type="button" className={accountType === "business" ? "active" : ""} onClick={() => setAccountType("business")}><Building2 /><span><b>Business</b><small>List services or spares</small></span>{accountType === "business" && <Check />}</button>
+                <button type="button" className={accountType === "motorist" ? "active" : ""} onClick={() => setAccountType("motorist")}><span><b>Motorist</b><small>Browse and save providers</small></span>{accountType === "motorist" && <Check />}</button>
+              </div>
+            )}
             {mode !== "login" && (
               <label>
-                Username
-                <input required name="username" autoComplete="username" />
+                {accountType === "business" ? "Contact person" : "Your name"}
+                <input required name="username" autoComplete="name" />
               </label>
             )}
             <label>
@@ -61,6 +76,13 @@ export function AccountForm({
                   }
                 />
               </label>
+            )}
+            {mode === "register" && accountType === "business" && (
+              <>
+                <label>Business name<input required name="businessName" autoComplete="organization" /></label>
+                <label>Primary location<select required name="area" defaultValue=""><option value="" disabled>Select city or town</option>{['Harare','Bulawayo','Gweru','Mutare','Masvingo','Chitungwiza','Kwekwe','Kadoma','Marondera','Other'].map((area) => <option key={area}>{area}</option>)}</select></label>
+                <div className="application-note"><b>Your location powers discovery</b><p>Customers use this area to find providers nearby. An exact distance will only appear when verified map coordinates are available.</p></div>
+              </>
             )}
             {mode === "apply" && (
               <>
@@ -96,7 +118,7 @@ export function AccountForm({
               {mode === "login"
                 ? "Sign in"
                 : mode === "register"
-                  ? "Create account"
+                  ? accountType === "business" ? "Create business account" : "Create motorist account"
                   : "Submit application"}
             </button>
           </>

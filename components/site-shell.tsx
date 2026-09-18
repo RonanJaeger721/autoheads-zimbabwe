@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, Search, UserRound, X } from "lucide-react";
+import { BriefcaseBusiness, Menu, Search, X } from "lucide-react";
 import { useState } from "react";
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -29,8 +29,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Link href="/#search" aria-label="Search">
             <Search size={19} />
           </Link>
-          <Link href="/login" aria-label="Sign in">
-            <UserRound size={19} />
+          <Link className="business-login" href="/login" aria-label="Business login">
+            <BriefcaseBusiness size={18} /><span>Business login</span>
           </Link>
           <button className="menu-button" onClick={() => setOpen(!open)}>
             {open ? <X /> : <Menu />}
@@ -45,7 +45,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             <Link href="/motoring">Motoring</Link>
             <Link href="/verified">Verified</Link>
             <Link href="/about">About</Link>
-            <Link href="/login">Account</Link>
+            <Link href="/login">Business login</Link>
+            <Link href="/register">Register a business</Link>
           </nav>
         )}
       </header>
@@ -79,10 +80,10 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Link href="/about">About</Link>
         </div>
         <div>
-          <b>Account</b>
-          <Link href="/login">Login</Link>
-          <Link href="/register">Register</Link>
-          <Link href="/apply">Apply as a provider</Link>
+          <b>For businesses</b>
+          <Link href="/login">Business login</Link>
+          <Link href="/register">Create business account</Link>
+          <Link href="/apply">List your business</Link>
         </div>
       </footer>
     </div>
