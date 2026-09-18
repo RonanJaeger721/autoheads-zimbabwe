@@ -1928,7 +1928,7 @@ footer:after {
 }
 .browser-car img {
   object-fit: contain;
-  mix-blend-mode: screen;
+  filter: drop-shadow(0 30px 35px #0008);
 }
 .browser-info {
   position: absolute;
@@ -2061,7 +2061,9 @@ footer:after {
   background: #222;
 }
 .vehicle-card img {
-  object-fit: cover;
+  object-fit: contain;
+  padding: 20px;
+  filter: drop-shadow(0 20px 20px #0008);
   transition: 0.5s transform;
 }
 .vehicle-card:hover img {

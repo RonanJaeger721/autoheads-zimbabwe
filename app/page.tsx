@@ -152,7 +152,7 @@ export default function Home() {
           </motion.div>
           <motion.div className="cutout-car" style={{ x: carX }}>
             <Image
-              src="/images/pickup-cutout-v2.png"
+              src="/images/vehicles/toyota-hilux-cutout.png"
               fill
               alt="Silver double-cab utility pickup"
             />

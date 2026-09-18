@@ -35,7 +35,7 @@ export const vehicles = [
     makeId: "1",
     make: "Toyota",
     name: "Hilux",
-    image: "/images/hilux-road.webp",
+    image: img("toyota-hilux-cutout.png"),
     intro:
       "A durable pickup known across Zimbabwe for work, travel and demanding road conditions.",
   },
@@ -101,7 +101,7 @@ export const vehicles = [
     makeId: "3",
     make: "BMW",
     name: "3 Series",
-    image: img("model_20210714125741.png"),
+    image: img("bmw-3-series-cutout.png"),
     intro: "Autoheads vehicle guide and ownership information.",
   },
   {
@@ -130,7 +130,7 @@ export const vehicles = [
     makeId: "8",
     make: "Honda",
     name: "Fit “Small is the New Big”",
-    image: img("model_20210714175721.jpg"),
+    image: img("honda-fit-cutout.png"),
     intro: "Autoheads vehicle guide and ownership information.",
   },
   {
@@ -274,7 +274,7 @@ export const vehicles = [
     makeId: "18",
     make: "Mercedes-Benz",
     name: "C-Class",
-    image: img("model_20211123143220.jpg"),
+    image: img("mercedes-c-class-cutout.png"),
     intro: "Autoheads vehicle guide and ownership information.",
   },
   {
@@ -322,7 +322,7 @@ export const vehicles = [
     makeId: "20",
     make: "Nissan",
     name: "Juke",
-    image: img("model_20211201134151.png"),
+    image: img("nissan-juke-cutout.png"),
     intro: "Autoheads vehicle guide and ownership information.",
   },
   {
