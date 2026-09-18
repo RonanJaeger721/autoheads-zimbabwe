@@ -94,7 +94,7 @@ export function CarsExplorer() {
                 exit={{ opacity: 0, x: -70, scale: 0.97 }}
                 transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Image src={car.image!} fill alt={`${car.make} ${car.name}`} />
+                <Image src={car.image!} fill priority sizes="(max-width: 800px) 90vw, 65vw" alt={`${car.make} ${car.name}`} />
               </motion.div>
             </AnimatePresence>
             <div className="browser-info">
@@ -177,7 +177,7 @@ function VehicleCard({ v }: { v: (typeof vehicles)[number] }) {
     <Link className="vehicle-card" href={`/vehicle/${v.makeId}/${v.id}`}>
       <div>
         {"image" in v && v.image ? (
-          <Image src={v.image} fill alt={`${v.make} ${v.name}`} />
+          <Image src={v.image} fill sizes="(max-width: 600px) 86vw, (max-width: 1100px) 44vw, 30vw" alt={`${v.make} ${v.name}`} />
         ) : (
           <span className="vehicle-no-image">
             <small>{v.make}</small>
