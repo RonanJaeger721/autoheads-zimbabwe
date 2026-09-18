@@ -14,6 +14,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             alt="Autoheads — Your Digital Motoring Community"
             width={200}
             height={64}
+            priority
           />
         </Link>
         <nav className="desktop-nav">

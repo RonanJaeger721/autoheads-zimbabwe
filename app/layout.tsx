@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Autoheads Zimbabwe — Digital Motoring Community",
   description:
     "Vehicle guides, spares suppliers, mechanics and motoring knowledge for Zimbabwe.",
+  icons: { icon: "/images/autoheads-logo.png" },
 };
 export default function RootLayout({
   children,
