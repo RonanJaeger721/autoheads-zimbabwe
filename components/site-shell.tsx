@@ -1,14 +1,15 @@
-"use client";
-import Link from "next/link";
-import Image from "next/image";
-import { BriefcaseBusiness, Menu, Search, X } from "lucide-react";
-import { useState } from "react";
+'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowUpRight, Menu, UserRound, X } from 'lucide-react';
+import { useState } from 'react';
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="site">
-      <header className="nav-shell">
-        <Link href="/" className="brand" aria-label="Autoheads home">
+      <header className="community-nav">
+        <div className="nav-edition">Zimbabwe / Motoring community</div>
+        <Link href="/" className="community-brand" aria-label="Autoheads home">
           <Image
             src="/images/autoheads-logo.png"
             alt="Autoheads — Your Digital Motoring Community"
@@ -17,37 +18,51 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             priority
           />
         </Link>
-        <nav className="desktop-nav">
-          <Link href="/cars">Cars</Link>
-          <Link href="/list-shops">Spares</Link>
-          <Link href="/list-mechanics">Mechanics</Link>
-          <Link href="/workshops">Workshops</Link>
-          <Link href="/motoring">Motoring</Link>
-          <Link href="/verified">Verified</Link>
-          <Link href="/about">About</Link>
-        </nav>
-        <div className="nav-actions">
-          <Link href="/#search" aria-label="Search">
-            <Search size={19} />
+        <nav className="community-links" aria-label="Main navigation">
+          <Link href="/list-makes">
+            <span>01</span>Cars
           </Link>
-          <Link className="business-login" href="/login" aria-label="Business login">
-            <BriefcaseBusiness size={18} /><span>Business login</span>
+          <Link href="/list-shops">
+            <span>02</span>Spares
+          </Link>
+          <Link href="/list-mechanics">
+            <span>03</span>Mechanics
+          </Link>
+          <Link href="/list-workshops">
+            <span>04</span>Workshops
+          </Link>
+          <Link href="/list-posts">
+            <span>05</span>Stories
+          </Link>
+        </nav>
+        <div className="community-actions">
+          <Link className="join-link" href="/register">
+            Join community <ArrowUpRight />
+          </Link>
+          <Link className="login-link" href="/login" aria-label="Login">
+            <UserRound size={17} />
+            <span>Login</span>
           </Link>
           <button className="menu-button" onClick={() => setOpen(!open)}>
             {open ? <X /> : <Menu />}
           </button>
         </div>
         {open && (
-          <nav className="mobile-nav">
-            <Link href="/cars">Cars</Link>
+          <nav className="community-mobile" aria-label="Mobile navigation">
+            <small>EXPLORE AUTOHEADS</small>
+            <Link href="/list-makes">Cars</Link>
             <Link href="/list-shops">Spares</Link>
             <Link href="/list-mechanics">Mechanics</Link>
-            <Link href="/workshops">Workshops</Link>
-            <Link href="/motoring">Motoring</Link>
+            <Link href="/list-workshops">Workshops</Link>
+            <Link href="/list-posts">News</Link>
+            <Link href="/list-motoring-tips">Motoring Tips</Link>
             <Link href="/verified">Verified</Link>
             <Link href="/about">About</Link>
-            <Link href="/login">Business login</Link>
-            <Link href="/register">Register a business</Link>
+            <div>
+              <Link href="/login">Login</Link>
+              <Link href="/register">Sign up</Link>
+              <Link href="/apply">Apply</Link>
+            </div>
           </nav>
         )}
       </header>

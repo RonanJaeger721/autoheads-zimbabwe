@@ -1,6 +1,6 @@
-"use client";
-import Link from "next/link";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+'use client';
+import Link from 'next/link';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,7 +10,7 @@ import {
   SlidersHorizontal,
   X,
   ShieldCheck,
-} from "lucide-react";
+} from 'lucide-react';
 type Listing = {
   name: string;
   tags: readonly string[] | string[];
@@ -21,23 +21,23 @@ type Listing = {
 const PAGE_SIZE = 15;
 const locationOf = (address: string) =>
   [
-    "Harare",
-    "Bulawayo",
-    "Gweru",
-    "Marondera",
-    "Mutare",
-    "Masvingo",
-    "Chitungwiza",
-    "Kwekwe",
-    "Kadoma",
-    "Online",
-  ].find((x) => address.toLowerCase().includes(x.toLowerCase())) ?? "Other";
-const whatsappNumber = (phone = "") => {
-  const first = phone.split(",")[0].replace(/\D/g, "");
-  if (!first) return "";
-  return first.startsWith("263")
+    'Harare',
+    'Bulawayo',
+    'Gweru',
+    'Marondera',
+    'Mutare',
+    'Masvingo',
+    'Chitungwiza',
+    'Kwekwe',
+    'Kadoma',
+    'Online',
+  ].find((x) => address.toLowerCase().includes(x.toLowerCase())) ?? 'Other';
+const whatsappNumber = (phone = '') => {
+  const first = phone.split(',')[0].replace(/\D/g, '');
+  if (!first) return '';
+  return first.startsWith('263')
     ? first
-    : first.startsWith("0")
+    : first.startsWith('0')
       ? `263${first.slice(1)}`
       : first;
 };
@@ -47,14 +47,14 @@ export function DirectoryPage({
   items,
   categories,
 }: {
-  kind: "Spares" | "Mechanics" | "Workshops";
+  kind: 'Spares' | 'Mechanics' | 'Workshops';
   items: readonly Listing[];
   categories: readonly string[] | string[];
 }) {
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState('');
   const deferredQ = useDeferredValue(q);
-  const [cat, setCat] = useState("All");
-  const [location, setLocation] = useState("All");
+  const [cat, setCat] = useState('All');
+  const [location, setLocation] = useState('All');
   const [filters, setFilters] = useState(false);
   const [page, setPage] = useState(1);
   const locations = useMemo(
@@ -63,8 +63,8 @@ export function DirectoryPage({
   );
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const requested = params.get("location");
-    const requestedQuery = params.get("q");
+    const requested = params.get('location');
+    const requestedQuery = params.get('q');
     if (requested && locations.includes(requested)) setLocation(requested);
     if (requestedQuery) setQ(requestedQuery);
   }, [locations]);
@@ -72,12 +72,12 @@ export function DirectoryPage({
     () =>
       items.filter(
         (x) =>
-          (cat === "All" ||
-            `${x.details ?? ""} ${x.tags.join(" ")}`
+          (cat === 'All' ||
+            `${x.details ?? ''} ${x.tags.join(' ')}`
               .toLowerCase()
               .includes(cat.toLowerCase())) &&
-          (location === "All" || locationOf(x.address) === location) &&
-          `${x.name} ${x.details ?? ""} ${x.tags.join(" ")} ${x.address}`
+          (location === 'All' || locationOf(x.address) === location) &&
+          `${x.name} ${x.details ?? ''} ${x.tags.join(' ')} ${x.address}`
             .toLowerCase()
             .includes(deferredQ.toLowerCase()),
       ),
@@ -89,7 +89,7 @@ export function DirectoryPage({
     (current - 1) * PAGE_SIZE,
     current * PAGE_SIZE,
   );
-  const isSpares = kind === "Spares";
+  const isSpares = kind === 'Spares';
   const chooseCategory = (value: string) => {
     setCat(value);
     setPage(1);
@@ -101,18 +101,20 @@ export function DirectoryPage({
   return (
     <main>
       <div className="directory-hero">
-        <span>FIND / TRUST / CONNECT</span>
+        <span>AUTOHEADS DIRECTORY / ZIMBABWE</span>
         <h1>
           {isSpares
-            ? "What does your car need?"
-            : kind === "Mechanics"
-              ? "Find a mechanic."
-              : "Find a workshop."}
+            ? 'Spares Shops'
+            : kind === 'Mechanics'
+              ? 'Mechanics'
+              : 'Workshops'}
         </h1>
         <p>
           {isSpares
-            ? "Search parts, suppliers or categories."
-            : "Search services, providers or locations."}
+            ? 'Find genuine spares nearby. Compare quality and prices.'
+            : kind === 'Mechanics'
+              ? 'Locate a genuine mechanic in your area now.'
+              : 'Locating a genuine workshop is now easier. Find one digitally.'}
         </p>
         <div className="directory-search">
           <input
@@ -123,8 +125,8 @@ export function DirectoryPage({
             }}
             placeholder={
               isSpares
-                ? "Search parts, suppliers or categories…"
-                : "Search service, provider or location…"
+                ? 'Search parts, suppliers or categories…'
+                : 'Search service, provider or location…'
             }
           />
           <button onClick={() => setFilters(true)}>
@@ -133,14 +135,14 @@ export function DirectoryPage({
           </button>
         </div>
         <div className="active-filters">
-          {cat !== "All" && (
-            <button onClick={() => chooseCategory("All")}>
+          {cat !== 'All' && (
+            <button onClick={() => chooseCategory('All')}>
               {cat}
               <X />
             </button>
           )}
-          {location !== "All" && (
-            <button onClick={() => chooseLocation("All")}>
+          {location !== 'All' && (
+            <button onClick={() => chooseLocation('All')}>
               {location}
               <X />
             </button>
@@ -150,7 +152,7 @@ export function DirectoryPage({
       <div className="quick-categories">
         {categories.slice(0, 8).map((x) => (
           <button
-            className={cat === x ? "active" : ""}
+            className={cat === x ? 'active' : ''}
             key={x}
             onClick={() => chooseCategory(x)}
           >
@@ -162,7 +164,7 @@ export function DirectoryPage({
         </button>
       </div>
       <div className="directory-layout">
-        <aside className={filters ? "filter-open" : ""}>
+        <aside className={filters ? 'filter-open' : ''}>
           <div className="filter-title">
             <b>Filter results</b>
             <button
@@ -186,14 +188,14 @@ export function DirectoryPage({
           </label>
           <b>Category / service</b>
           <button
-            className={cat === "All" ? "active" : ""}
-            onClick={() => chooseCategory("All")}
+            className={cat === 'All' ? 'active' : ''}
+            onClick={() => chooseCategory('All')}
           >
             All
           </button>
           {categories.map((x) => (
             <button
-              className={cat === x ? "active" : ""}
+              className={cat === x ? 'active' : ''}
               key={x}
               onClick={() => chooseCategory(x)}
             >
@@ -206,9 +208,9 @@ export function DirectoryPage({
           <button
             className="reset"
             onClick={() => {
-              chooseCategory("All");
-              chooseLocation("All");
-              setQ("");
+              chooseCategory('All');
+              chooseLocation('All');
+              setQ('');
             }}
           >
             Reset filters
@@ -216,7 +218,10 @@ export function DirectoryPage({
         </aside>
         <section className="results">
           <div className="results-meta">
-            <span>{filtered.length} source listings{location !== "All" ? ` in ${location}` : ""}</span>
+            <span>
+              {filtered.length} source listings
+              {location !== 'All' ? ` in ${location}` : ''}
+            </span>
             <span>
               Page {current} of {pages}
             </span>
@@ -224,18 +229,20 @@ export function DirectoryPage({
           {visible.map((x, i) => {
             const slug = x.name
               .toLowerCase()
-              .replaceAll(" ", "-")
-              .replaceAll("&", "and");
+              .replaceAll(' ', '-')
+              .replaceAll('&', 'and');
             const wa = whatsappNumber(x.phone);
             return (
               <article className="business-row" key={`${x.name}-${i}`}>
                 <div className="business-index">
-                  {String((current - 1) * PAGE_SIZE + i + 1).padStart(2, "0")}
+                  {String((current - 1) * PAGE_SIZE + i + 1).padStart(2, '0')}
                 </div>
                 <div className="business-main">
                   <div className="listing-eyebrow">
-                    <small>{x.tags.join(" · ")}</small>
-                    <span className="verification-status"><ShieldCheck /> Not yet verified</span>
+                    <small>{x.tags.join(' · ')}</small>
+                    <span className="verification-status">
+                      <ShieldCheck /> Not yet verified
+                    </span>
                   </div>
                   <h2>
                     <Link href={`/business/${slug}`}>{x.name}</Link>

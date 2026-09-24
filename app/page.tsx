@@ -1,18 +1,18 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
   ArrowRight,
   BookOpen,
   CarFront,
   MapPinned,
   Wrench,
-} from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { SiteShell, SectionHead } from "@/components/site-shell";
-import { GlobalSearch } from "@/components/global-search";
-import { CurvedBadge } from "@/components/curved-badge";
-import { vehicles, posts, shops, categories } from "@/lib/autoheads-data";
+} from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { SiteShell, SectionHead } from '@/components/site-shell';
+import { GlobalSearch } from '@/components/global-search';
+import { CurvedBadge } from '@/components/curved-badge';
+import { vehicles, posts, shops, categories } from '@/lib/autoheads-data';
 const reveal = {
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
@@ -24,7 +24,7 @@ const reveal = {
 };
 export default function Home() {
   const { scrollYProgress } = useScroll();
-  const carX = useTransform(scrollYProgress, [0.14, 0.48], ["7%", "-3%"]);
+  const carX = useTransform(scrollYProgress, [0.14, 0.48], ['7%', '-3%']);
   return (
     <SiteShell>
       <main className="fluid-home">
@@ -50,15 +50,14 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.7 }}
           >
-            <span>AUTOHEADS ZIMBABWE</span>
+            <span>AUTOHEADS ZIMBABWE / EST. DIGITAL</span>
             <h1>
-              <i>Know your car.</i>
+              Your digital
               <br />
-              <em>Find what it needs.</em>
+              <em>motoring community.</em>
             </h1>
             <p>
-              Zimbabwe’s vehicle knowledge, spares, mechanics and motoring
-              culture—connected.
+              Cars <i>·</i> Spares <i>·</i> Mechanics <i>·</i> People
             </p>
           </motion.div>
           <motion.div
@@ -78,10 +77,10 @@ export default function Home() {
             <GlobalSearch />
             <div className="quick-links">
               {[
-                ["Vehicles", "/list-makes"],
-                ["Find spares", "/list-shops"],
-                ["Mechanics", "/list-mechanics"],
-                ["Motoring", "/list-posts"],
+                ['Vehicles', '/list-makes'],
+                ['Find spares', '/list-shops'],
+                ['Mechanics', '/list-mechanics'],
+                ['Motoring', '/list-posts'],
               ].map(([x, h]) => (
                 <Link href={h} key={x}>
                   {x}
@@ -98,29 +97,29 @@ export default function Home() {
               title="One road. Four ways in."
             />
           </motion.div>
-          <div className="discovery-orbit">
+          <div className="community-paths">
             {[
               [
                 CarFront,
-                "A vehicle",
-                "Understand your next car.",
-                "/list-makes",
+                'A vehicle',
+                'Understand your next car.',
+                '/list-makes',
               ],
-              [Wrench, "A spare", "Find the right supplier.", "/list-shops"],
+              [Wrench, 'A spare', 'Find the right supplier.', '/list-shops'],
               [
                 MapPinned,
-                "A mechanic",
-                "Get expert help nearby.",
-                "/list-mechanics",
+                'A mechanic',
+                'Get expert help nearby.',
+                '/list-mechanics',
               ],
-              [BookOpen, "Advice", "Learn from the garage.", "/list-posts"],
+              [BookOpen, 'Advice', 'Learn from the garage.', '/list-posts'],
             ].map(([Icon, title, copy, href], i) => {
               const I = Icon as typeof CarFront;
               return (
                 <motion.div
                   {...reveal}
                   transition={{ ...reveal.transition, delay: i * 0.08 }}
-                  className={`orbit-item orbit-${i + 1}`}
+                  className="community-path"
                   key={title as string}
                 >
                   <Link href={href as string}>
@@ -133,8 +132,24 @@ export default function Home() {
                 </motion.div>
               );
             })}
-            <div className="orbit-line" />
           </div>
+        </section>
+        <section className="community-callout">
+          <div>
+            <span>FOR MOTORISTS + BUSINESSES</span>
+            <h2>A place in the community starts here.</h2>
+          </div>
+          <p>
+            Create a member account, set your city and make it easier to
+            discover the right automotive help near you. Businesses can apply to
+            list spares, mechanic services or workshops.
+          </p>
+          <nav>
+            <Link href="/register">
+              Create an account <ArrowRight />
+            </Link>
+            <Link href="/apply">List a business</Link>
+          </nav>
         </section>
         <section className="showroom">
           <div className="showroom-word">HILUX</div>
@@ -169,7 +184,7 @@ export default function Home() {
           <div className="vehicle-selector">
             {vehicles.slice(0, 5).map((v, i) => (
               <Link
-                className={i === 0 ? "active" : ""}
+                className={i === 0 ? 'active' : ''}
                 key={v.id}
                 href={`/vehicle/${v.makeId}/${v.id}`}
               >
@@ -216,7 +231,7 @@ export default function Home() {
               <Link href="/list-shops" key={s.name}>
                 <span>0{i + 1}</span>
                 <b>{s.name}</b>
-                <small>{s.tags.join(" · ")}</small>
+                <small>{s.tags.join(' · ')}</small>
                 <ArrowRight />
               </Link>
             ))}
@@ -231,7 +246,7 @@ export default function Home() {
               <motion.div
                 {...reveal}
                 transition={{ ...reveal.transition, delay: i * 0.12 }}
-                className={i === 0 ? "feature-story" : "side-story"}
+                className={i === 0 ? 'feature-story' : 'side-story'}
                 key={p.id}
               >
                 <Link href={`/view-${p.id}`}>
@@ -254,8 +269,8 @@ export default function Home() {
           </div>
           <div className="topic-track">
             <div>
-              MAINTENANCE <b>•</b> ENGINE OIL <b>•</b> BRAKES <b>•</b>{" "}
-              SUSPENSION <b>•</b> TYRES <b>•</b> SPARES <b>•</b> VEHICLE GUIDES{" "}
+              MAINTENANCE <b>•</b> ENGINE OIL <b>•</b> BRAKES <b>•</b>{' '}
+              SUSPENSION <b>•</b> TYRES <b>•</b> SPARES <b>•</b> VEHICLE GUIDES{' '}
               <b>•</b>
             </div>
           </div>
