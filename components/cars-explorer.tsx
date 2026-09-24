@@ -1,10 +1,10 @@
-"use client";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowLeft, ArrowRight, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { makes, vehicles } from "@/lib/autoheads-data";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { isApprovedVehiclePhoto, makes, vehicles } from '@/lib/autoheads-data';
 import {
   Select,
   SelectContent,
@@ -13,24 +13,25 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export function CarsExplorer() {
-  const [q, setQ] = useState("");
-  const [makeId, setMakeId] = useState("all");
+  const [q, setQ] = useState('');
+  const [makeId, setMakeId] = useState('all');
   const [active, setActive] = useState(0);
   type VehicleWithImage = Extract<
     (typeof vehicles)[number],
     { readonly image: string }
   >;
   const featured = vehicles.filter(
-    (v): v is VehicleWithImage => "image" in v && Boolean(v.image),
+    (v): v is VehicleWithImage =>
+      'image' in v && isApprovedVehiclePhoto(v.image),
   );
   const filtered = useMemo(
     () =>
       vehicles.filter(
         (v) =>
-          (makeId === "all" || v.makeId === makeId) &&
+          (makeId === 'all' || v.makeId === makeId) &&
           `${v.make} ${v.name}`.toLowerCase().includes(q.toLowerCase()),
       ),
     [makeId, q],
@@ -66,13 +67,13 @@ export function CarsExplorer() {
             <button
               key={id}
               onClick={() => setMakeId(id)}
-              className={makeId === id ? "active" : ""}
+              className={makeId === id ? 'active' : ''}
             >
               {name}
             </button>
           ))}
         </div>
-        {q || makeId !== "all" ? (
+        {q || makeId !== 'all' ? (
           <div className="search-vehicle-results">
             {filtered.length ? (
               filtered.map((v) => <VehicleCard key={v.id} v={v} />)
@@ -94,7 +95,13 @@ export function CarsExplorer() {
                 exit={{ opacity: 0, x: -70, scale: 0.97 }}
                 transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Image src={car.image!} fill priority sizes="(max-width: 800px) 90vw, 65vw" alt={`${car.make} ${car.name}`} />
+                <Image
+                  src={car.image!}
+                  fill
+                  priority
+                  sizes="(max-width: 800px) 90vw, 65vw"
+                  alt={`${car.make} ${car.name}`}
+                />
               </motion.div>
             </AnimatePresence>
             <div className="browser-info">
@@ -110,8 +117,8 @@ export function CarsExplorer() {
                 <ArrowLeft />
               </button>
               <span>
-                {String(active + 1).padStart(2, "0")} /{" "}
-                {String(featured.length).padStart(2, "0")}
+                {String(active + 1).padStart(2, '0')} /{' '}
+                {String(featured.length).padStart(2, '0')}
               </span>
               <button onClick={() => move(1)} aria-label="Next vehicle">
                 <ArrowRight />
@@ -123,7 +130,7 @@ export function CarsExplorer() {
       <section id="guides" className="guide-library">
         <div>
           <span>BROWSE THE COMPLETE LIBRARY</span>
-          <h2>{selectedMake ? selectedMake[1] : "Know what you drive."}</h2>
+          <h2>{selectedMake ? selectedMake[1] : 'Know what you drive.'}</h2>
         </div>
         <div className="make-dropdown-panel">
           <div>
@@ -132,10 +139,10 @@ export function CarsExplorer() {
           </div>
           <Select
             value={makeId}
-            onValueChange={(value) => setMakeId(value ?? "all")}
+            onValueChange={(value) => setMakeId(value ?? 'all')}
           >
             <SelectTrigger aria-label="Select vehicle make">
-              <SelectValue>{selectedMake?.[1] ?? "All makes"}</SelectValue>
+              <SelectValue>{selectedMake?.[1] ?? 'All makes'}</SelectValue>
             </SelectTrigger>
             <SelectContent align="end">
               <SelectGroup>
@@ -150,7 +157,7 @@ export function CarsExplorer() {
             </SelectContent>
           </Select>
           <span>
-            {filtered.length} {filtered.length === 1 ? "guide" : "guides"}
+            {filtered.length} {filtered.length === 1 ? 'guide' : 'guides'}
           </span>
         </div>
         <div className="vehicle-grid-full">
@@ -163,7 +170,7 @@ export function CarsExplorer() {
         <span>ALL MAKES / {makes.length}</span>
         {makes.map(([id, name], i) => (
           <Link href={`/make/${id}`} key={id}>
-            <small>{String(i + 1).padStart(2, "0")}</small>
+            <small>{String(i + 1).padStart(2, '0')}</small>
             <b>{name}</b>
             <ArrowRight />
           </Link>
@@ -176,8 +183,13 @@ function VehicleCard({ v }: { v: (typeof vehicles)[number] }) {
   return (
     <Link className="vehicle-card" href={`/vehicle/${v.makeId}/${v.id}`}>
       <div>
-        {"image" in v && v.image ? (
-          <Image src={v.image} fill sizes="(max-width: 600px) 86vw, (max-width: 1100px) 44vw, 30vw" alt={`${v.make} ${v.name}`} />
+        {'image' in v && isApprovedVehiclePhoto(v.image) ? (
+          <Image
+            src={v.image}
+            fill
+            sizes="(max-width: 600px) 86vw, (max-width: 1100px) 44vw, 30vw"
+            alt={`${v.make} ${v.name}`}
+          />
         ) : (
           <span className="vehicle-no-image">
             <small>{v.make}</small>

@@ -29,6 +29,16 @@ export const makes = [
   ['27', 'Volvo'],
 ] as const;
 const img = (name: string) => `/images/vehicles/${name}`;
+const approvedVehiclePhotography = new Set([
+  'toyota-hilux-cutout.png',
+  'pinterest-mark-x.jpg',
+  'bmw-3-series-cutout.png',
+  'honda-fit-cutout.png',
+  'mercedes-c-class-cutout.png',
+  'nissan-juke-cutout.png',
+]);
+export const isApprovedVehiclePhoto = (src?: string) =>
+  Boolean(src && approvedVehiclePhotography.has(src.split('/').pop() ?? ''));
 export const vehicles = [
   {
     id: '6',

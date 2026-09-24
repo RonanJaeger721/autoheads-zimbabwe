@@ -1,9 +1,9 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { SiteShell } from "@/components/site-shell";
-import { VehicleTabs } from "@/components/vehicle-tabs";
-import { vehicles } from "@/lib/autoheads-data";
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { SiteShell } from '@/components/site-shell';
+import { VehicleTabs } from '@/components/vehicle-tabs';
+import { isApprovedVehiclePhoto, vehicles } from '@/lib/autoheads-data';
 export default async function Page({
   params,
 }: {
@@ -15,16 +15,24 @@ export default async function Page({
   const related = vehicles.filter(
     (x) => x.makeId === v.makeId && x.id !== v.id,
   );
+  const image = 'image' in v ? v.image : undefined;
+  const hasPhoto = isApprovedVehiclePhoto(image);
+  const isCutout = hasPhoto && image?.endsWith('.png');
   return (
     <SiteShell>
       <main className="vehicle-page vehicle-page-v2">
-        <section className="vehicle-hero">
-          <Image
-            src={"image" in v && v.image ? v.image : "/images/hilux-road.webp"}
-            fill
-            priority
-            alt={`${v.make} ${v.name}`}
-          />
+        <section
+          className={`vehicle-hero ${hasPhoto ? (isCutout ? 'vehicle-hero--cutout' : 'vehicle-hero--photo') : 'vehicle-hero--graphic'}`}
+        >
+          {hasPhoto && image ? (
+            <Image
+              src={image}
+              fill
+              priority
+              sizes="100vw"
+              alt={`${v.make} ${v.name}`}
+            />
+          ) : null}
           <div />
           <nav className="crumbs">
             <Link href="/">Home</Link>
@@ -50,7 +58,7 @@ export default async function Page({
               discovery.
             </p>
           </div>
-          <Link href={`/list-shops?q=${encodeURIComponent("Filters")}`}>
+          <Link href={`/list-shops?q=${encodeURIComponent('Filters')}`}>
             Find parts <ArrowRight />
           </Link>
           <Link href="/list-mechanics">
