@@ -87,12 +87,11 @@ export default function Home() {
         <section className="community-callout">
           <div>
             <span>JOIN AUTOHEADS</span>
-            <h2>Two routes. One motoring community.</h2>
+            <h2>Join the community. Choose your route.</h2>
           </div>
           <p>
-            Motorists can create a free account for useful motoring information
-            and vehicle services. Automotive businesses can apply separately to
-            be reviewed and listed.
+            Create a motorist account for useful information and vehicle
+            services—or apply to list your automotive business.
           </p>
           <nav>
             <Link href="/register">

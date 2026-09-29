@@ -3666,3 +3666,64 @@ footer:after {
 .site-credit a { color: #fff; }
 @media(max-width:800px){.hero-v2 .hero-copy,.hero-v2 .hero-search{left:0;right:0;width:calc(100% - 36px);margin-inline:auto}.hero-v2 .hero-copy{top:70px}}
 @media(max-width:520px){.hero-v2 .hero-copy,.hero-v2 .hero-search{width:calc(100% - 24px)}.hero-v2 .hero-copy{top:52px}}
+
+/* Jaeger editorial type calibration — expressive, never oversized */
+.hero-v2 .hero-copy h1 {
+  max-width: 900px;
+  font-size: clamp(3.25rem, 5.6vw, 5.4rem);
+  line-height: .9;
+  letter-spacing: -.058em;
+  text-wrap: balance;
+}
+.section-head h2,
+.showroom-copy h2,
+.spares-copy h2,
+.community-callout h2 {
+  font-size: clamp(2.75rem, 4.5vw, 4.65rem);
+  line-height: .94;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+}
+.directory-hero h1,
+.index-page h1,
+.cars-title h1,
+.article-page header h1,
+.account-page h1,
+.help-results-page h1,
+.privacy-page h1,
+.subscribe-page h1 {
+  font-size: clamp(3rem, 5.3vw, 5.25rem);
+  line-height: .94;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+}
+.make-intro h1,
+.business-hero h1,
+.verified-page h1 {
+  font-size: clamp(3.5rem, 6.4vw, 6.75rem);
+  line-height: .9;
+  letter-spacing: -.058em;
+  text-wrap: balance;
+}
+.vehicle-hero h1 {
+  font-size: clamp(4.25rem, 8vw, 8.5rem);
+  line-height: .84;
+}
+.route-finder > header h2 {
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  line-height: 1;
+  letter-spacing: -.035em;
+}
+@media(max-width:800px){
+  .hero-v2 .hero-copy h1{font-size:clamp(2.9rem,10.8vw,4.7rem);line-height:.92}
+  .section-head h2,.showroom-copy h2,.spares-copy h2,.community-callout h2{font-size:clamp(2.35rem,8vw,3.7rem)}
+  .directory-hero h1,.index-page h1,.cars-title h1,.article-page header h1,.account-page h1,.help-results-page h1,.privacy-page h1,.subscribe-page h1{font-size:clamp(2.7rem,9vw,4.15rem)}
+  .make-intro h1,.business-hero h1,.verified-page h1{font-size:clamp(3rem,11vw,4.8rem)}
+  .vehicle-hero h1{font-size:clamp(3.8rem,14vw,6rem)}
+}
+@media(max-width:430px){
+  .hero-v2 .hero-copy h1{font-size:clamp(2.75rem,12vw,3.55rem);letter-spacing:-.052em}
+  .hero-v2 .hero-copy p{letter-spacing:.055em}
+  .route-finder > header h2{font-size:1.42rem;line-height:1.05}
+  .community-mobile > a{font-size:clamp(1.75rem,8vw,2.5rem)}
+}

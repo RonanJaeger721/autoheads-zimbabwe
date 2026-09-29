@@ -25,9 +25,9 @@ export function GlobalSearch() {
       <header>
         <div>
           <span>AUTOHEADS DIRECTORY</span>
-          <h2 id="route-finder-title">Find automotive help near you.</h2>
+          <h2 id="route-finder-title">Find the right help, nearby.</h2>
         </div>
-        <small>Choose a location and the service or part you need.</small>
+        <small>Search by location, then choose what you need.</small>
       </header>
       <div
         className="finder-sequence"
@@ -84,7 +84,7 @@ export function GlobalSearch() {
       </div>
       <div className="route-footer">
         <span>
-          Where are you? → What do you need? → Find relevant providers.
+          Location first. Category second. The most relevant providers next.
         </span>
         <Link href="/list-makes">Looking for a car? Browse vehicle guides</Link>
       </div>
