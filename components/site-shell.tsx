@@ -43,12 +43,23 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             <UserRound size={17} />
             <span>Login</span>
           </Link>
-          <button className="menu-button" onClick={() => setOpen(!open)}>
+          <button
+            type="button"
+            className="menu-button"
+            aria-label={open ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
+            onClick={() => setOpen(!open)}
+          >
             {open ? <X /> : <Menu />}
           </button>
         </div>
         {open && (
-          <nav className="community-mobile" aria-label="Mobile navigation">
+          <nav
+            id="mobile-navigation"
+            className="community-mobile"
+            aria-label="Mobile navigation"
+          >
             <small>EXPLORE AUTOHEADS</small>
             <Link href="/list-makes">Vehicle Guides</Link>
             <Link href="/list-shops">Spares</Link>
@@ -103,6 +114,12 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Link href="/subscribe">Subscribe</Link>
           <Link href="/privacy">Privacy</Link>
         </div>
+        <p className="site-credit">
+          Website built &amp; developed by{' '}
+          <a href="https://wa.me/263789937251" target="_blank" rel="noreferrer">
+            Jaeger Media
+          </a>
+        </p>
       </footer>
     </div>
   );
