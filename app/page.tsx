@@ -1,13 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowRight,
-  BookOpen,
-  CarFront,
-  MapPinned,
-  Wrench,
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { SiteShell, SectionHead } from '@/components/site-shell';
 import { GlobalSearch } from '@/components/global-search';
@@ -77,10 +71,10 @@ export default function Home() {
             <GlobalSearch />
             <div className="quick-links">
               {[
-                ['Vehicles', '/list-makes'],
-                ['Find spares', '/list-shops'],
-                ['Mechanics', '/list-mechanics'],
-                ['Motoring', '/list-posts'],
+                ['Vehicle guides', '/list-makes'],
+                ['Browse providers', '/find-help'],
+                ['Find a mechanic', '/list-mechanics'],
+                ['Motoring tips', '/list-motoring-tips'],
               ].map(([x, h]) => (
                 <Link href={h} key={x}>
                   {x}
@@ -90,65 +84,22 @@ export default function Home() {
             </div>
           </motion.div>
         </section>
-        <section className="discovery section fluid-discovery">
-          <motion.div {...reveal}>
-            <SectionHead
-              kicker="01 / CHOOSE YOUR ROUTE"
-              title="One road. Four ways in."
-            />
-          </motion.div>
-          <div className="community-paths">
-            {[
-              [
-                CarFront,
-                'A vehicle',
-                'Understand your next car.',
-                '/list-makes',
-              ],
-              [Wrench, 'A spare', 'Find the right supplier.', '/list-shops'],
-              [
-                MapPinned,
-                'A mechanic',
-                'Get expert help nearby.',
-                '/list-mechanics',
-              ],
-              [BookOpen, 'Advice', 'Learn from the garage.', '/list-posts'],
-            ].map(([Icon, title, copy, href], i) => {
-              const I = Icon as typeof CarFront;
-              return (
-                <motion.div
-                  {...reveal}
-                  transition={{ ...reveal.transition, delay: i * 0.08 }}
-                  className="community-path"
-                  key={title as string}
-                >
-                  <Link href={href as string}>
-                    <span>0{i + 1}</span>
-                    <I />
-                    <h3>{title as string}</h3>
-                    <p>{copy as string}</p>
-                    <ArrowRight />
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-        </section>
         <section className="community-callout">
           <div>
-            <span>FOR MOTORISTS + BUSINESSES</span>
-            <h2>A place in the community starts here.</h2>
+            <span>JOIN AUTOHEADS</span>
+            <h2>Two routes. One motoring community.</h2>
           </div>
           <p>
-            Create a member account, set your city and make it easier to
-            discover the right automotive help near you. Businesses can apply to
-            list spares, mechanic services or workshops.
+            Motorists can create a free account for useful motoring information
+            and vehicle services. Automotive businesses can apply separately to
+            be reviewed and listed.
           </p>
           <nav>
             <Link href="/register">
-              Create an account <ArrowRight />
+              Join as a motorist <ArrowRight />
             </Link>
             <Link href="/apply">List a business</Link>
+            <Link href="/subscribe">Subscribe for updates</Link>
           </nav>
         </section>
         <section className="showroom">

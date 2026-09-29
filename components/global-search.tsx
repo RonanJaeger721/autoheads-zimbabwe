@@ -1,109 +1,56 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  ArrowRight,
-  Building2,
-  MapPin,
-  PackageSearch,
-  ShieldCheck,
-  Wrench,
-} from 'lucide-react';
+import { ArrowRight, MapPin, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
-
-const areas = [
-  'Harare',
-  'Bulawayo',
-  'Gweru',
-  'Mutare',
-  'Masvingo',
-  'Chitungwiza',
-  'Kwekwe',
-  'Kadoma',
-  'Marondera',
-];
-const prompts = {
-  mechanic: ['Diagnostics', 'Brakes', 'Electrical', 'Suspension'],
-  spares: ['Filters', 'Body parts', 'Batteries', 'Tyres'],
-  workshop: ['Vehicle service', 'Wheel alignment', 'Auto electrics', 'Towing'],
-} as const;
+import { cityAreas, helpCategories } from '@/lib/search-options';
 
 export function GlobalSearch() {
-  const [intent, setIntent] = useState<'mechanic' | 'spares' | 'workshop'>(
-    'mechanic',
-  );
-  const [area, setArea] = useState('Harare');
-  const [need, setNeed] = useState('');
+  const [city, setCity] = useState('Harare');
+  const [area, setArea] = useState('All areas');
+  const [category, setCategory] = useState('');
+  const areas = cityAreas[city] ?? ['All areas'];
   const href = useMemo(
     () =>
-      `${intent === 'mechanic' ? '/list-mechanics' : intent === 'spares' ? '/list-shops' : '/list-workshops'}?q=${encodeURIComponent(need)}&location=${encodeURIComponent(area)}`,
-    [area, intent, need],
+      `/find-help?city=${encodeURIComponent(city)}&area=${encodeURIComponent(area)}&category=${encodeURIComponent(category)}`,
+    [area, category, city],
   );
 
   return (
     <section
       id="search"
-      className="route-finder"
+      className="route-finder unified-finder"
       aria-labelledby="route-finder-title"
     >
       <header>
         <div>
-          <span>NEARBY DIRECTORY</span>
-          <h2 id="route-finder-title">What are you looking for?</h2>
+          <span>AUTOHEADS DIRECTORY</span>
+          <h2 id="route-finder-title">Find automotive help near you.</h2>
         </div>
-        <small>
-          Results are matched by listed area, not estimated distance.
-        </small>
+        <small>Choose a location and the service or part you need.</small>
       </header>
-      <div className="route-choice" role="group" aria-label="Choose directory">
-        <button
-          type="button"
-          className={intent === 'mechanic' ? 'active' : ''}
-          onClick={() => {
-            setIntent('mechanic');
-            setNeed('');
-          }}
-        >
-          <Wrench aria-hidden="true" />
+      <div
+        className="finder-sequence"
+        aria-label="Search by location and category"
+      >
+        <label className="route-field">
           <span>
-            <b>A mechanic</b>
-            <small>Repairs, diagnostics and workshops</small>
+            <MapPin aria-hidden="true" /> City / Town
           </span>
-        </button>
-        <button
-          type="button"
-          className={intent === 'spares' ? 'active' : ''}
-          onClick={() => {
-            setIntent('spares');
-            setNeed('');
-          }}
-        >
-          <PackageSearch aria-hidden="true" />
-          <span>
-            <b>Car spares</b>
-            <small>Parts, tyres, oils and suppliers</small>
-          </span>
-        </button>
-        <button
-          type="button"
-          className={intent === 'workshop' ? 'active' : ''}
-          onClick={() => {
-            setIntent('workshop');
-            setNeed('');
-          }}
-        >
-          <Building2 aria-hidden="true" />
-          <span>
-            <b>A workshop</b>
-            <small>Specialists and service centres</small>
-          </span>
-        </button>
-      </div>
-      <div className="route-details">
-        <label className="route-field route-area">
-          <span>
-            <MapPin aria-hidden="true" /> Near
-          </span>
+          <select
+            value={city}
+            onChange={(event) => {
+              setCity(event.target.value);
+              setArea('All areas');
+            }}
+          >
+            {Object.keys(cityAreas).map((item) => (
+              <option key={item}>{item}</option>
+            ))}
+          </select>
+        </label>
+        <label className="route-field">
+          <span>Area / Suburb</span>
           <select
             value={area}
             onChange={(event) => setArea(event.target.value)}
@@ -113,36 +60,33 @@ export function GlobalSearch() {
             ))}
           </select>
         </label>
-        <label className="route-field route-need">
+        <label className="route-field finder-category">
           <span>
-            {intent === 'mechanic' ? 'Service needed' : 'Part needed'}
+            <Search aria-hidden="true" /> What do you need?
           </span>
-          <input
-            value={need}
-            onChange={(event) => setNeed(event.target.value)}
-            placeholder={
-              intent === 'mechanic'
-                ? 'e.g. brake repair'
-                : 'e.g. Toyota filters'
-            }
-          />
+          <select
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+          >
+            <option value="">Select category or service</option>
+            {helpCategories.map((item) => (
+              <option key={item}>{item}</option>
+            ))}
+          </select>
         </label>
-        <Link className="route-submit" href={href}>
-          Show nearby <ArrowRight />
+        <Link
+          className={`route-submit ${category ? '' : 'is-disabled'}`}
+          href={category ? href : '#search'}
+          aria-disabled={!category}
+        >
+          Find help <ArrowRight />
         </Link>
       </div>
       <div className="route-footer">
-        <div className="route-suggestions">
-          <span>Popular:</span>
-          {prompts[intent].map((prompt) => (
-            <button type="button" key={prompt} onClick={() => setNeed(prompt)}>
-              {prompt}
-            </button>
-          ))}
-        </div>
-        <Link href="/verified">
-          <ShieldCheck /> Understand verification
-        </Link>
+        <span>
+          Where are you? → What do you need? → Find relevant providers.
+        </span>
+        <Link href="/list-makes">Looking for a car? Browse vehicle guides</Link>
       </div>
     </section>
   );

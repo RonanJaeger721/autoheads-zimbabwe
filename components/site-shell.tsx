@@ -20,19 +20,19 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         </Link>
         <nav className="community-links" aria-label="Main navigation">
           <Link href="/list-makes">
-            <span>01</span>Cars
+            <span>01</span>Vehicle Guides
           </Link>
           <Link href="/list-shops">
             <span>02</span>Spares
           </Link>
           <Link href="/list-mechanics">
-            <span>03</span>Mechanics
+            <span>03</span>Find A Mechanic
           </Link>
           <Link href="/list-workshops">
             <span>04</span>Workshops
           </Link>
-          <Link href="/list-posts">
-            <span>05</span>Stories
+          <Link href="/list-motoring-tips">
+            <span>05</span>Motoring Tips
           </Link>
         </nav>
         <div className="community-actions">
@@ -50,9 +50,9 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         {open && (
           <nav className="community-mobile" aria-label="Mobile navigation">
             <small>EXPLORE AUTOHEADS</small>
-            <Link href="/list-makes">Cars</Link>
+            <Link href="/list-makes">Vehicle Guides</Link>
             <Link href="/list-shops">Spares</Link>
-            <Link href="/list-mechanics">Mechanics</Link>
+            <Link href="/list-mechanics">Find A Mechanic</Link>
             <Link href="/list-workshops">Workshops</Link>
             <Link href="/list-posts">News</Link>
             <Link href="/list-motoring-tips">Motoring Tips</Link>
@@ -98,8 +98,10 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <div>
           <b>For businesses</b>
           <Link href="/login">Business login</Link>
-          <Link href="/register">Create business account</Link>
+          <Link href="/register">Join as a motorist</Link>
           <Link href="/apply">List your business</Link>
+          <Link href="/subscribe">Subscribe</Link>
+          <Link href="/privacy">Privacy</Link>
         </div>
       </footer>
     </div>

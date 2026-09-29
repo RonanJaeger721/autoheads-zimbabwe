@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'list-makes',
     'list-shops',
     'list-mechanics',
+    'find-help',
     'list-workshops',
     'workshops',
     'motoring',
@@ -16,6 +17,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'verified',
     'about',
     'apply',
+    'privacy',
+    'subscribe',
   ];
   return [
     ...staticRoutes.map((path) => ({

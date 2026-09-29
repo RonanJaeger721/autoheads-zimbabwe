@@ -1,21 +1,38 @@
 'use client';
+
 import Link from 'next/link';
-import { Building2, Check, MapPin, ShieldCheck } from 'lucide-react';
+import { Building2, CarFront, MapPin, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import { makes } from '@/lib/autoheads-data';
+import { cityAreas, helpCategories, providerTypes } from '@/lib/search-options';
+
 export function AccountForm({
   mode,
 }: {
   mode: 'login' | 'register' | 'apply';
 }) {
   const [done, setDone] = useState(false);
-  const [providerType, setProviderType] = useState('Spares supplier');
-  const [accountType, setAccountType] = useState<'motorist' | 'business'>(
-    'business',
-  );
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const [city, setCity] = useState('Harare');
+  const [selected, setSelected] = useState<string[]>([]);
+  const submit = (event: React.FormEvent) => {
+    event.preventDefault();
     setDone(true);
   };
+  const toggleCategory = (category: string) =>
+    setSelected((current) =>
+      current.includes(category)
+        ? current.filter((item) => item !== category)
+        : current.length < 10
+          ? [...current, category]
+          : current,
+    );
+
+  const title =
+    mode === 'login'
+      ? 'Sign in to Autoheads.'
+      : mode === 'register'
+        ? 'Join as a motorist.'
+        : 'List your automotive business.';
   return (
     <main className="account-page">
       <section>
@@ -23,83 +40,45 @@ export function AccountForm({
           {mode === 'login'
             ? 'AUTOHEAD SYSTEM / LOGIN'
             : mode === 'register'
-              ? 'AUTOHEAD SYSTEM / SIGN UP'
-              : 'AUTOHEAD SYSTEM / APPLY'}
+              ? 'JOIN AUTOHEADS / MOTORIST'
+              : 'JOIN AUTOHEADS / BUSINESS'}
         </span>
-        <h1>
-          {mode === 'login'
-            ? 'Sign in to your community.'
-            : mode === 'register'
-              ? 'Create Account'
-              : 'Spares / Mechanics / Workshops: Apply'}
-        </h1>
+        <h1>{title}</h1>
         <p>
           {mode === 'apply'
-            ? 'Create a listing request for a spares business, mechanic or workshop. Verification is reviewed separately before any badge is shown.'
-            : mode === 'login'
-              ? 'Sign in to manage your listing, location, contact details and verification application.'
-              : 'Motorists can save their preferences. Businesses can build a searchable provider profile.'}
+            ? 'Submit a provider application for Autoheads review. An approved listing is not automatically Autoheads Verified.'
+            : mode === 'register'
+              ? 'Create your free account, save your location and optionally tell us what you drive.'
+              : 'Access your motorist account or business application.'}
         </p>
         <div className="account-benefits">
           <span>
-            <MapPin /> Set your operating area
+            <MapPin /> Location-aware discovery
           </span>
           <span>
-            <Building2 /> Manage business details
+            <CarFront /> Relevant vehicle information
           </span>
           <span>
-            <ShieldCheck /> Apply for verification
+            <ShieldCheck /> Privacy-conscious account design
           </span>
         </div>
       </section>
       <form onSubmit={submit}>
         {done ? (
           <div className="form-notice">
-            <b>
-              {mode === 'apply'
-                ? 'Your application details are ready.'
-                : mode === 'login'
-                  ? 'Business sign-in is ready to connect.'
-                  : 'Your account details are ready.'}
-            </b>
+            <b>Your details are ready.</b>
             <p>
-              The secure Autoheads account service still needs to be connected
-              before this form can send or retain information. Your details have
-              not been claimed as submitted.
+              The secure Autoheads account and application service still needs
+              to be connected before this form can retain or submit information.
             </p>
           </div>
         ) : (
           <>
-            {mode === 'register' && (
-              <div
-                className="account-type"
-                role="group"
-                aria-label="Choose account type"
-              >
-                <button
-                  type="button"
-                  className={accountType === 'business' ? 'active' : ''}
-                  onClick={() => setAccountType('business')}
-                >
-                  <Building2 />
-                  <span>
-                    <b>Business</b>
-                    <small>List services or spares</small>
-                  </span>
-                  {accountType === 'business' && <Check />}
-                </button>
-                <button
-                  type="button"
-                  className={accountType === 'motorist' ? 'active' : ''}
-                  onClick={() => setAccountType('motorist')}
-                >
-                  <span>
-                    <b>Motorist</b>
-                    <small>Browse and save providers</small>
-                  </span>
-                  {accountType === 'motorist' && <Check />}
-                </button>
-              </div>
+            {mode !== 'login' && (
+              <label>
+                {mode === 'apply' ? 'Contact person' : 'First name'}
+                <input required name="firstName" autoComplete="name" />
+              </label>
             )}
             {mode === 'register' && (
               <label>
@@ -110,19 +89,30 @@ export function AccountForm({
                   </option>
                   <option>Female</option>
                   <option>Male</option>
+                  <option>Prefer not to say</option>
                 </select>
               </label>
             )}
+            <label>
+              Email address {mode === 'register' && <small>Optional</small>}
+              <input
+                required={mode !== 'register'}
+                type="email"
+                name="email"
+                autoComplete="email"
+              />
+            </label>
             {mode !== 'login' && (
               <label>
-                {accountType === 'business' ? 'Contact person' : 'Your name'}
-                <input required name="username" autoComplete="name" />
+                Mobile number {mode === 'register' && <small>Optional</small>}
+                <input
+                  required={mode === 'apply'}
+                  type="tel"
+                  name="phone"
+                  autoComplete="tel"
+                />
               </label>
             )}
-            <label>
-              Email
-              <input required type="email" name="email" autoComplete="email" />
-            </label>
             {mode !== 'apply' && (
               <label>
                 Password
@@ -136,7 +126,64 @@ export function AccountForm({
                 />
               </label>
             )}
-            {mode === 'register' && accountType === 'business' && (
+            {mode === 'register' && (
+              <>
+                <label>
+                  City / Town
+                  <select
+                    required
+                    name="city"
+                    value={city}
+                    onChange={(event) => setCity(event.target.value)}
+                  >
+                    {Object.keys(cityAreas).map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <fieldset className="optional-vehicle">
+                  <legend>Optional vehicle details</legend>
+                  <label>
+                    Make
+                    <select name="vehicleMake" defaultValue="">
+                      <option value="">Select make or skip</option>
+                      {makes.map(([id, name]) => (
+                        <option value={id} key={id}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Model
+                    <input name="vehicleModel" />
+                  </label>
+                  <label>
+                    Year
+                    <input name="vehicleYear" inputMode="numeric" />
+                  </label>
+                  <label>
+                    Engine / Fuel type
+                    <select name="fuel" defaultValue="">
+                      <option value="">Select or skip</option>
+                      <option>Petrol</option>
+                      <option>Diesel</option>
+                      <option>Hybrid</option>
+                      <option>Electric</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                </fieldset>
+                <label className="consent-check">
+                  <input type="checkbox" name="marketingOptIn" />{' '}
+                  <span>
+                    Yes, send me useful motoring tips, articles, vehicle advice
+                    and occasional Autoheads updates by email.
+                  </span>
+                </label>
+              </>
+            )}
+            {mode === 'apply' && (
               <>
                 <label>
                   Business name
@@ -147,136 +194,81 @@ export function AccountForm({
                   />
                 </label>
                 <label>
-                  Primary location
-                  <select required name="area" defaultValue="">
-                    <option value="" disabled>
-                      Select city or town
-                    </option>
-                    {[
-                      'Harare',
-                      'Bulawayo',
-                      'Gweru',
-                      'Mutare',
-                      'Masvingo',
-                      'Chitungwiza',
-                      'Kwekwe',
-                      'Kadoma',
-                      'Marondera',
-                      'Other',
-                    ].map((area) => (
-                      <option key={area}>{area}</option>
-                    ))}
-                  </select>
-                </label>
-                <div className="application-note">
-                  <b>Your location powers discovery</b>
-                  <p>
-                    Customers use this area to find providers nearby. An exact
-                    distance will only appear when verified map coordinates are
-                    available.
-                  </p>
-                </div>
-              </>
-            )}
-            {mode === 'register' && accountType === 'motorist' && (
-              <>
-                <label>
-                  City
-                  <select required name="city" defaultValue="">
-                    <option value="" disabled>
-                      Select city
-                    </option>
-                    {[
-                      'Harare',
-                      'Bulawayo',
-                      'Mutare',
-                      'Kwekwe',
-                      'Chitungwiza',
-                      'Masvingo',
-                      'Kadoma',
-                      'Gweru',
-                      'Other',
-                    ].map((area) => (
-                      <option key={area}>{area}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Location
-                  <input
-                    required
-                    name="location"
-                    placeholder="Suburb or area"
-                  />
-                </label>
-              </>
-            )}
-            {mode === 'apply' && (
-              <>
-                <label>
-                  Cellphone
-                  <input required type="tel" name="phone" />
-                </label>
-                <label>
-                  I want to list
+                  City / Town
                   <select
                     required
-                    value={providerType}
-                    onChange={(e) => setProviderType(e.target.value)}
+                    name="city"
+                    value={city}
+                    onChange={(event) => setCity(event.target.value)}
                   >
-                    <option>Spares supplier</option>
-                    <option>Independent mechanic</option>
-                    <option>Workshop</option>
-                  </select>
-                </label>
-                <label>
-                  Business or trading name
-                  <input required name="businessName" />
-                </label>
-                <label>
-                  Area / city
-                  <select required name="area" defaultValue="">
-                    <option value="" disabled>
-                      Select area
-                    </option>
-                    {[
-                      'Harare',
-                      'Bulawayo',
-                      'Gweru',
-                      'Mutare',
-                      'Masvingo',
-                      'Chitungwiza',
-                      'Kwekwe',
-                      'Kadoma',
-                      'Marondera',
-                      'Other',
-                    ].map((area) => (
-                      <option key={area}>{area}</option>
+                    {Object.keys(cityAreas).map((item) => (
+                      <option key={item}>{item}</option>
                     ))}
                   </select>
                 </label>
                 <label>
-                  Physical address
-                  <input required name="address" />
+                  Area / Suburb
+                  <select required name="area" defaultValue="All areas">
+                    {cityAreas[city].map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
                 </label>
                 <label>
-                  Services or parts supplied
+                  Business area type
+                  <select required name="businessType" defaultValue="">
+                    <option value="" disabled>
+                      Select business type
+                    </option>
+                    {providerTypes.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </label>
+                <fieldset className="service-selector">
+                  <legend>
+                    Categories / services offered{' '}
+                    <small>{selected.length}/10 selected</small>
+                  </legend>
+                  <p>
+                    Select up to 10. These categories connect your application
+                    to motorist search.
+                  </p>
+                  <div>
+                    {helpCategories.map((item) => (
+                      <label key={item}>
+                        <input
+                          type="checkbox"
+                          name="categories"
+                          value={item}
+                          checked={selected.includes(item)}
+                          disabled={
+                            !selected.includes(item) && selected.length >= 10
+                          }
+                          onChange={() => toggleCategory(item)}
+                        />
+                        <span>{item}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <label>
+                  Other services <small>Optional</small>
                   <textarea
-                    required
-                    name="services"
-                    rows={4}
-                    placeholder={
-                      providerType === 'Spares supplier'
-                        ? 'e.g. Toyota suspension parts, filters, body panels'
-                        : 'e.g. diagnostics, suspension, electrical repairs'
-                    }
+                    name="otherServices"
+                    rows={3}
+                    placeholder="Describe a service not available in the list"
                   />
                 </label>
+                <label>
+                  Physical / business address
+                  <input required name="address" />
+                </label>
                 <div className="application-note">
-                  <b>What happens next</b>
+                  <b>Review before publication</b>
                   <p>
-                    Autoheads reviews the business details and evidence.
-                    Applying does not automatically make a listing verified.
+                    Autoheads reviews the application before publishing a
+                    listing. Verification is a separate process.
                   </p>
                 </div>
               </>
@@ -285,10 +277,8 @@ export function AccountForm({
               {mode === 'login'
                 ? 'Sign in'
                 : mode === 'register'
-                  ? accountType === 'business'
-                    ? 'Create business account'
-                    : 'Create motorist account'
-                  : 'Submit application'}
+                  ? 'Create motorist account'
+                  : 'Submit business application'}
             </button>
           </>
         )}
@@ -298,11 +288,12 @@ export function AccountForm({
           )}
           {mode === 'login' && (
             <>
-              <Link href="/register">Register a new membership</Link>
+              <Link href="/register">Join as a motorist</Link>
               <Link href="/login#help">I forgot my password</Link>
             </>
           )}
-          {mode !== 'apply' && <Link href="/apply">List a business</Link>}
+          {mode !== 'apply' && <Link href="/apply">List your business</Link>}
+          <Link href="/privacy">Privacy</Link>
         </nav>
       </form>
     </main>
