@@ -100,3 +100,26 @@ export async function PATCH(request: NextRequest) {
   await writeStore(storeName, next);
   return NextResponse.json(next.find((record) => record.id === body.id));
 }
+
+export async function DELETE(request: NextRequest) {
+  if (!authorised(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const id = request.nextUrl.searchParams.get('id');
+  if (!id) {
+    return NextResponse.json(
+      { error: 'Application ID is required.' },
+      { status: 400 },
+    );
+  }
+  const records = await readStore<BusinessApplication[]>(storeName, []);
+  const next = records.filter((record) => record.id !== id);
+  if (next.length === records.length) {
+    return NextResponse.json(
+      { error: 'Application not found.' },
+      { status: 404 },
+    );
+  }
+  await writeStore(storeName, next);
+  return NextResponse.json({ ok: true });
+}
