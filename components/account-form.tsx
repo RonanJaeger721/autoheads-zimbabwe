@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { CarFront, MapPin, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { makes } from '@/lib/autoheads-data';
 import { cityAreas, helpCategories, providerTypes } from '@/lib/search-options';
@@ -11,44 +12,53 @@ export function AccountForm({
 }: {
   mode: 'login' | 'register' | 'apply';
 }) {
+  const router = useRouter();
   const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [city, setCity] = useState('Harare');
   const [selected, setSelected] = useState<string[]>([]);
-  const submit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+  const submit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
+    setError('');
+    const form = new FormData(event.currentTarget);
+    const payload = Object.fromEntries(form.entries()) as Record<
+      string,
+      unknown
+    >;
+    payload.categories = form.getAll('categories');
+    payload.marketingOptIn = form.get('marketingOptIn') === 'on';
     if (mode === 'apply') {
-      const data = new FormData(event.currentTarget as HTMLFormElement);
-      const storageKey = 'autoheads-admin-applications';
-      const saved = window.localStorage.getItem(storageKey);
-      let current: Array<Record<string, unknown>> = [];
-      try {
-        current = saved
-          ? (JSON.parse(saved) as Array<Record<string, unknown>>)
-          : [];
-      } catch {
-        current = [];
-      }
-      const businessName = data.get('businessName');
-      const businessType = data.get('businessType');
-      const businessLocation = data.get('city');
-      current.unshift({
-        id: Date.now(),
-        name:
-          typeof businessName === 'string'
-            ? businessName
-            : 'Business application',
-        type:
-          typeof businessType === 'string'
-            ? businessType
-            : 'Automotive business',
-        location:
-          typeof businessLocation === 'string' ? businessLocation : 'Zimbabwe',
-        status: 'Pending',
-        submitted: 'Submitted through the public application form',
-      });
-      window.localStorage.setItem(storageKey, JSON.stringify(current));
+      payload.name = form.get('businessName');
+      payload.type = form.get('businessType');
+      payload.location = form.get('city');
+      payload.contactName = form.get('firstName');
     }
-    setDone(true);
+    const endpoint =
+      mode === 'apply'
+        ? '/api/applications'
+        : mode === 'register'
+          ? '/api/account/register'
+          : '/api/account/login';
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    setLoading(false);
+    if (!response.ok) {
+      const result = (await response.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      setError(result?.error ?? 'Something went wrong. Please try again.');
+      return;
+    }
+    if (mode === 'apply') setDone(true);
+    else {
+      router.replace('/account');
+      router.refresh();
+    }
   };
   const toggleCategory = (category: string) =>
     setSelected((current) =>
@@ -100,8 +110,8 @@ export function AccountForm({
           <div className="form-notice">
             <b>Your details are ready.</b>
             <p>
-              The secure Autoheads account and application service still needs
-              to be connected before this form can retain or submit information.
+              Your application has been submitted to Autoheads for review. A
+              published listing and Verified status remain separate decisions.
             </p>
           </div>
         ) : (
@@ -126,13 +136,8 @@ export function AccountForm({
               </label>
             )}
             <label>
-              Email address {mode === 'register' && <small>Optional</small>}
-              <input
-                required={mode !== 'register'}
-                type="email"
-                name="email"
-                autoComplete="email"
-              />
+              Email address
+              <input required type="email" name="email" autoComplete="email" />
             </label>
             {mode !== 'login' && (
               <label>
@@ -305,12 +310,19 @@ export function AccountForm({
                 </div>
               </>
             )}
-            <button>
-              {mode === 'login'
-                ? 'Sign in'
-                : mode === 'register'
-                  ? 'Create motorist account'
-                  : 'Submit business application'}
+            {error && (
+              <p className="account-error" role="alert">
+                {error}
+              </p>
+            )}
+            <button disabled={loading}>
+              {loading
+                ? 'Please wait…'
+                : mode === 'login'
+                  ? 'Sign in'
+                  : mode === 'register'
+                    ? 'Create motorist account'
+                    : 'Submit business application'}
             </button>
           </>
         )}
@@ -321,7 +333,6 @@ export function AccountForm({
           {mode === 'login' && (
             <>
               <Link href="/register">Join as a motorist</Link>
-              <Link href="/login#help">I forgot my password</Link>
             </>
           )}
           {mode !== 'apply' && <Link href="/apply">List your business</Link>}

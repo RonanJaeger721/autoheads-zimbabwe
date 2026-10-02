@@ -1,0 +1,102 @@
+import { randomUUID } from 'node:crypto';
+import { NextRequest, NextResponse } from 'next/server';
+import { ADMIN_COOKIE, verifyAdminSession } from '@/lib/admin-auth';
+import { readStore, writeStore } from '@/lib/platform-store';
+import type {
+  ApplicationStatus,
+  BusinessApplication,
+} from '@/lib/platform-types';
+
+const storeName = 'business-applications';
+const allowedStatuses: ApplicationStatus[] = [
+  'Pending',
+  'Approved',
+  'Needs review',
+  'Archived',
+];
+
+const authorised = (request: NextRequest) =>
+  verifyAdminSession(request.cookies.get(ADMIN_COOKIE)?.value);
+
+export async function GET(request: NextRequest) {
+  if (!authorised(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return NextResponse.json(
+    await readStore<BusinessApplication[]>(storeName, []),
+  );
+}
+
+export async function POST(request: NextRequest) {
+  const body = (await request.json().catch(() => null)) as Record<
+    string,
+    unknown
+  > | null;
+  if (!body) {
+    return NextResponse.json(
+      { error: 'Invalid application.' },
+      { status: 400 },
+    );
+  }
+  const name = typeof body.name === 'string' ? body.name.trim() : '';
+  const type = typeof body.type === 'string' ? body.type.trim() : '';
+  const location =
+    typeof body.location === 'string' ? body.location.trim() : '';
+  if (!name || !type || !location) {
+    return NextResponse.json(
+      { error: 'Business name, type and city are required.' },
+      { status: 400 },
+    );
+  }
+
+  const now = new Date().toISOString();
+  const record: BusinessApplication = {
+    id: randomUUID(),
+    name,
+    type,
+    location,
+    area: typeof body.area === 'string' ? body.area : undefined,
+    address: typeof body.address === 'string' ? body.address : undefined,
+    contactName:
+      typeof body.contactName === 'string' ? body.contactName : undefined,
+    email: typeof body.email === 'string' ? body.email : undefined,
+    phone: typeof body.phone === 'string' ? body.phone : undefined,
+    categories: Array.isArray(body.categories)
+      ? body.categories.filter(
+          (item): item is string => typeof item === 'string',
+        )
+      : [],
+    otherServices:
+      typeof body.otherServices === 'string' ? body.otherServices : undefined,
+    status: 'Pending',
+    submitted: authorised(request)
+      ? 'Added by administrator'
+      : 'Submitted through the public application form',
+    createdAt: now,
+    updatedAt: now,
+  };
+  const records = await readStore<BusinessApplication[]>(storeName, []);
+  await writeStore(storeName, [record, ...records]);
+  return NextResponse.json(record, { status: 201 });
+}
+
+export async function PATCH(request: NextRequest) {
+  if (!authorised(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const body = (await request.json().catch(() => null)) as {
+    id?: string;
+    status?: ApplicationStatus;
+  } | null;
+  if (!body?.id || !body.status || !allowedStatuses.includes(body.status)) {
+    return NextResponse.json({ error: 'Invalid update.' }, { status: 400 });
+  }
+  const records = await readStore<BusinessApplication[]>(storeName, []);
+  const next = records.map((record) =>
+    record.id === body.id
+      ? { ...record, status: body.status!, updatedAt: new Date().toISOString() }
+      : record,
+  );
+  await writeStore(storeName, next);
+  return NextResponse.json(next.find((record) => record.id === body.id));
+}

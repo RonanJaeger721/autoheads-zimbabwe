@@ -22,6 +22,10 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import type {
+  ApplicationStatus,
+  BusinessApplication,
+} from '@/lib/platform-types';
 
 type Counts = {
   makes: number;
@@ -33,34 +37,6 @@ type Counts = {
   tips: number;
   categories: number;
 };
-
-type Application = {
-  id: number;
-  name: string;
-  type: string;
-  location: string;
-  status: 'Pending' | 'Approved' | 'Needs review' | 'Archived';
-  submitted: string;
-};
-
-const starterApplications: Application[] = [
-  {
-    id: 1,
-    name: 'New business application',
-    type: 'Workshop',
-    location: 'Harare',
-    status: 'Pending',
-    submitted: 'Awaiting review',
-  },
-  {
-    id: 2,
-    name: 'Supplier listing update',
-    type: 'Spares supplier',
-    location: 'Bulawayo',
-    status: 'Needs review',
-    submitted: 'Information update',
-  },
-];
 
 const sections = [
   ['Overview', CircleGauge],
@@ -77,27 +53,30 @@ export function AdminDashboard({ counts }: { counts: Counts }) {
   const [active, setActive] = useState('Overview');
   const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [applications, setApplications] = useState(starterApplications);
+  const [applications, setApplications] = useState<BusinessApplication[]>([]);
+  const [loadingRecords, setLoadingRecords] = useState(true);
   const [showNew, setShowNew] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem('autoheads-admin-applications');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as Application[];
-        queueMicrotask(() => setApplications(parsed));
-      } catch {
-        window.localStorage.removeItem('autoheads-admin-applications');
-      }
-    }
+    void fetch('/api/applications', { cache: 'no-store' })
+      .then((response) => response.json())
+      .then((records: BusinessApplication[]) => setApplications(records))
+      .finally(() => setLoadingRecords(false));
   }, []);
 
-  const save = (next: Application[]) => {
-    setApplications(next);
-    window.localStorage.setItem(
-      'autoheads-admin-applications',
-      JSON.stringify(next),
+  const updateStatus = async (id: string, status: ApplicationStatus) => {
+    const previous = applications;
+    setApplications((records) =>
+      records.map((record) =>
+        record.id === id ? { ...record, status } : record,
+      ),
     );
+    const response = await fetch('/api/applications', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    });
+    if (!response.ok) setApplications(previous);
   };
 
   const filtered = useMemo(
@@ -116,24 +95,22 @@ export function AdminDashboard({ counts }: { counts: Counts }) {
     router.refresh();
   }
 
-  function addApplication(event: React.SyntheticEvent<HTMLFormElement>) {
+  async function addApplication(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const name = data.get('name');
     const type = data.get('type');
     const location = data.get('location');
-    save([
-      {
-        id: Date.now(),
-        name: typeof name === 'string' ? name : '',
-        type: typeof type === 'string' ? type : '',
-        location: typeof location === 'string' ? location : '',
-        status: 'Pending',
-        submitted: 'Added by administrator',
-      },
-      ...applications,
-    ]);
-    setShowNew(false);
+    const response = await fetch('/api/applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, type, location }),
+    });
+    if (response.ok) {
+      const record = (await response.json()) as BusinessApplication;
+      setApplications((records) => [record, ...records]);
+      setShowNew(false);
+    }
   }
 
   const moduleCards = [
@@ -252,7 +229,9 @@ export function AdminDashboard({ counts }: { counts: Counts }) {
                 <b>{filtered.length} records</b>
               </header>
               <div className="admin-table">
-                {filtered.length ? (
+                {loadingRecords ? (
+                  <div className="admin-empty">Loading live records…</div>
+                ) : filtered.length ? (
                   filtered.map((item) => (
                     <article key={item.id}>
                       <div>
@@ -270,16 +249,9 @@ export function AdminDashboard({ counts }: { counts: Counts }) {
                         aria-label={`Change status for ${item.name}`}
                         value={item.status}
                         onChange={(event) =>
-                          save(
-                            applications.map((record) =>
-                              record.id === item.id
-                                ? {
-                                    ...record,
-                                    status: event.target
-                                      .value as Application['status'],
-                                  }
-                                : record,
-                            ),
+                          updateStatus(
+                            item.id,
+                            event.target.value as ApplicationStatus,
                           )
                         }
                       >
