@@ -4853,6 +4853,162 @@ footer:after {
   font-size: 12px;
   line-height: 1.5;
 }
+.admin-view-enter {
+  animation: admin-view-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes admin-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.admin-record-panel {
+  min-height: calc(100svh - 202px);
+  background: #fff;
+  border: 1px solid #d9dcd7;
+}
+.admin-record-panel > header {
+  min-height: 150px;
+  padding: clamp(24px, 4vw, 48px);
+  border-bottom: 1px solid #d9dcd7;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+  background: linear-gradient(120deg, #fff 0 68%, #f4511e 68% 100%);
+}
+.admin-record-panel > header span {
+  color: #d8380a;
+  font: 750 10px var(--font-tech);
+  letter-spacing: 0.14em;
+}
+.admin-record-panel > header h2 {
+  margin: 8px 0 5px;
+  font-size: clamp(2.2rem, 4vw, 4.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+.admin-record-panel > header p {
+  max-width: 620px;
+  margin: 0;
+  color: #666c67;
+}
+.admin-record-panel > header strong {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  background: #151716;
+  color: #fff;
+  font-size: 12px;
+}
+.admin-table-expanded article {
+  min-height: 94px;
+}
+.admin-record-list article {
+  --record-order: 0;
+  min-width: 0;
+  min-height: 108px;
+  padding: 20px clamp(20px, 3vw, 38px);
+  border-bottom: 1px solid #e2e4e0;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  animation: admin-row-in 0.42s both;
+  animation-delay: min(calc(var(--record-order) * 35ms), 350ms);
+  transition:
+    background 0.22s ease,
+    padding-left 0.22s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 108px;
+}
+@keyframes admin-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+.admin-record-list article:hover {
+  background: #f7f7f3;
+  padding-left: clamp(24px, 3.4vw, 46px);
+}
+.admin-record-list article > span {
+  color: #a1a6a1;
+  font: 700 11px var(--font-tech);
+}
+.admin-record-list article > div {
+  min-width: 0;
+}
+.admin-record-list small {
+  color: #f4511e;
+  font: 750 9px var(--font-tech);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.admin-record-list h3 {
+  margin: 5px 0 4px;
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  letter-spacing: -0.025em;
+}
+.admin-record-list p {
+  max-width: 780px;
+  margin: 0;
+  overflow: hidden;
+  color: #747a75;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-record-list a {
+  min-height: 44px;
+  border: 1px solid #d7dad5;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #202321;
+  font-size: 12px;
+  font-weight: 750;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.admin-record-list a:hover {
+  background: #151716;
+  color: #fff;
+}
+.admin-record-list a svg {
+  width: 15px;
+}
+.admin-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 120;
+  min-height: 50px;
+  border: 0;
+  background: #151716;
+  color: #fff;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.2);
+  animation: admin-toast-in 0.3s ease both;
+}
+.admin-toast svg {
+  width: 17px;
+  color: #f4511e;
+}
+@keyframes admin-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
 .admin-modal {
   position: fixed;
   inset: 0;
@@ -5017,6 +5173,36 @@ footer:after {
   .admin-table select {
     grid-column: 1/-1;
     width: 100%;
+  }
+  .admin-record-panel > header {
+    min-height: 180px;
+    align-items: flex-start;
+    flex-direction: column;
+    background: linear-gradient(160deg, #fff 0 76%, #f4511e 76% 100%);
+  }
+  .admin-record-panel > header h2 {
+    font-size: 2.65rem;
+  }
+  .admin-record-list article {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .admin-record-list article > a {
+    grid-column: 2;
+    width: max-content;
+  }
+  .admin-record-list p {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-view-enter,
+  .admin-record-list article,
+  .admin-toast {
+    animation: none;
   }
 }
 @media (max-width: 800px) {
