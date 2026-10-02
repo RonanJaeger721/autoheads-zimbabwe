@@ -113,6 +113,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Link href="/apply">List your business</Link>
           <Link href="/subscribe">Subscribe</Link>
           <Link href="/privacy">Privacy</Link>
+          <Link href="/admin/login">Admin</Link>
         </div>
         <p className="site-credit">
           Website built &amp; developed by{' '}

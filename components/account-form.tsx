@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Building2, CarFront, MapPin, ShieldCheck } from 'lucide-react';
+import { CarFront, MapPin, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { makes } from '@/lib/autoheads-data';
 import { cityAreas, helpCategories, providerTypes } from '@/lib/search-options';
@@ -14,8 +14,40 @@ export function AccountForm({
   const [done, setDone] = useState(false);
   const [city, setCity] = useState('Harare');
   const [selected, setSelected] = useState<string[]>([]);
-  const submit = (event: React.FormEvent) => {
+  const submit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (mode === 'apply') {
+      const data = new FormData(event.currentTarget as HTMLFormElement);
+      const storageKey = 'autoheads-admin-applications';
+      const saved = window.localStorage.getItem(storageKey);
+      let current: Array<Record<string, unknown>> = [];
+      try {
+        current = saved
+          ? (JSON.parse(saved) as Array<Record<string, unknown>>)
+          : [];
+      } catch {
+        current = [];
+      }
+      const businessName = data.get('businessName');
+      const businessType = data.get('businessType');
+      const businessLocation = data.get('city');
+      current.unshift({
+        id: Date.now(),
+        name:
+          typeof businessName === 'string'
+            ? businessName
+            : 'Business application',
+        type:
+          typeof businessType === 'string'
+            ? businessType
+            : 'Automotive business',
+        location:
+          typeof businessLocation === 'string' ? businessLocation : 'Zimbabwe',
+        status: 'Pending',
+        submitted: 'Submitted through the public application form',
+      });
+      window.localStorage.setItem(storageKey, JSON.stringify(current));
+    }
     setDone(true);
   };
   const toggleCategory = (category: string) =>
