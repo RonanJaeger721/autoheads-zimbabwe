@@ -1,19 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, MapPin, Search } from 'lucide-react';
+import { ArrowRight, MapPin, Search, Wrench } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { cityAreas, helpCategories } from '@/lib/search-options';
 
 export function GlobalSearch() {
   const [city, setCity] = useState('Harare');
   const [area, setArea] = useState('All areas');
+  const [provider, setProvider] = useState('Mechanic');
   const [category, setCategory] = useState('');
   const areas = cityAreas[city] ?? ['All areas'];
   const href = useMemo(
     () =>
-      `/find-help?city=${encodeURIComponent(city)}&area=${encodeURIComponent(area)}&category=${encodeURIComponent(category)}`,
-    [area, category, city],
+      `/find-help?provider=${encodeURIComponent(provider)}&city=${encodeURIComponent(city)}&area=${encodeURIComponent(area)}&category=${encodeURIComponent(category)}`,
+    [area, category, city, provider],
   );
 
   return (
@@ -27,12 +28,28 @@ export function GlobalSearch() {
           <span>AUTOHEADS DIRECTORY</span>
           <h2 id="route-finder-title">Find the right help, nearby.</h2>
         </div>
-        <small>Search by location, then choose what you need.</small>
+        <small>
+          Choose a provider, then narrow the search to your locality.
+        </small>
       </header>
       <div
         className="finder-sequence"
-        aria-label="Search by location and category"
+        aria-label="Search by provider, location and category"
       >
+        <label className="route-field">
+          <span>
+            <Wrench aria-hidden="true" /> Service provider
+          </span>
+          <select
+            value={provider}
+            onChange={(event) => setProvider(event.target.value)}
+          >
+            <option>Mechanic</option>
+            <option>Workshop</option>
+            <option>Spares supplier</option>
+            <option>Towing</option>
+          </select>
+        </label>
         <label className="route-field">
           <span>
             <MapPin aria-hidden="true" /> City / Town
@@ -74,19 +91,23 @@ export function GlobalSearch() {
             ))}
           </select>
         </label>
-        <Link
-          className={`route-submit ${category ? '' : 'is-disabled'}`}
-          href={category ? href : '#search'}
-          aria-disabled={!category}
-        >
+        <Link className="route-submit" href={href}>
           Find help <ArrowRight />
         </Link>
       </div>
       <div className="route-footer">
-        <span>
-          Location first. Category second. The most relevant providers next.
-        </span>
-        <Link href="/list-makes">Looking for a car? Browse vehicle guides</Link>
+        <span>Provider first. Location second. The right service next.</span>
+        <div
+          className="finder-routes"
+          aria-label="Autoheads directory sections"
+        >
+          <Link href="/list-mechanics">Mechanics</Link>
+          <Link href="/list-workshops">Workshops</Link>
+          <Link href="/list-shops">Spares</Link>
+          <Link href="/list-motoring-tips">Motoring tips</Link>
+          <Link href="/list-makes">Car guides</Link>
+          <Link href="/find-help?provider=Towing">Towing</Link>
+        </div>
       </div>
     </section>
   );

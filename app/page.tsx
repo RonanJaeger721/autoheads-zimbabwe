@@ -69,19 +69,6 @@ export default function Home() {
             transition={{ delay: 0.5, duration: 0.6 }}
           >
             <GlobalSearch />
-            <div className="quick-links">
-              {[
-                ['Vehicle guides', '/list-makes'],
-                ['Browse providers', '/find-help'],
-                ['Find a mechanic', '/list-mechanics'],
-                ['Motoring tips', '/list-motoring-tips'],
-              ].map(([x, h]) => (
-                <Link href={h} key={x}>
-                  {x}
-                  <ArrowRight />
-                </Link>
-              ))}
-            </div>
           </motion.div>
         </section>
         <section className="community-callout">
@@ -94,10 +81,10 @@ export default function Home() {
             services—or apply to list your automotive business.
           </p>
           <nav>
-            <Link href="/register">
-              Join as a motorist <ArrowRight />
+            <Link href="/apply">
+              List your business <ArrowRight />
             </Link>
-            <Link href="/apply">List a business</Link>
+            <Link href="/register">Join as a motorist</Link>
             <Link href="/subscribe">Subscribe for updates</Link>
           </nav>
         </section>

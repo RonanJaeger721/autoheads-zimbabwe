@@ -1,37 +1,74 @@
-import Link from "next/link";
-import { ArrowLeft, MapPin, MessageCircle, Phone } from "lucide-react";
-import { SiteShell } from "@/components/site-shell";
+import Link from 'next/link';
+import { ArrowLeft, MapPin, MessageCircle, Phone } from 'lucide-react';
+import { SiteShell } from '@/components/site-shell';
 import {
   sourceMechanics,
   sourceShops,
   sourceWorkshops,
-} from "@/lib/source-directory-data";
+} from '@/lib/source-directory-data';
+import { readStore } from '@/lib/platform-store';
+import type { BusinessApplication } from '@/lib/platform-types';
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const applications = await readStore<BusinessApplication[]>(
+    'business-applications',
+    [],
+  );
   const all = [
-    ...sourceShops.map((x) => ({ ...x, kind: "supplier" })),
-    ...sourceMechanics.map((x) => ({ ...x, kind: "mechanic" })),
-    ...sourceWorkshops.map((x) => ({ ...x, kind: "workshop" })),
+    ...applications
+      .filter((item) => item.status === 'Approved' && item.active)
+      .map((item) => ({
+        name: item.name,
+        details: item.otherServices || `${item.type} listed through Autoheads.`,
+        address: item.address || `${item.area || ''} ${item.location}`.trim(),
+        tags: item.categories ?? [],
+        phone: item.phone ?? '',
+        kind: item.type.toLowerCase(),
+        verified: item.verified,
+        featured: item.featured,
+      })),
+    ...sourceShops.map((x) => ({
+      ...x,
+      kind: 'supplier',
+      verified: false,
+      featured: false,
+    })),
+    ...sourceMechanics.map((x) => ({
+      ...x,
+      kind: 'mechanic',
+      verified: false,
+      featured: false,
+    })),
+    ...sourceWorkshops.map((x) => ({
+      ...x,
+      kind: 'workshop',
+      verified: false,
+      featured: false,
+    })),
   ];
   const business =
     all.find(
       (s) =>
-        s.name.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and") ===
+        s.name.toLowerCase().replaceAll(' ', '-').replaceAll('&', 'and') ===
         slug,
     ) ?? all[0];
   const back =
-    business.kind === "supplier"
-      ? "/list-shops"
-      : business.kind === "mechanic"
-        ? "/list-mechanics"
-        : "/workshops";
-  const firstPhone=business.phone.split(',')[0];
-  const digits=firstPhone.replace(/\D/g,'');
-  const whatsapp=digits.startsWith('263')?digits:digits.startsWith('0')?`263${digits.slice(1)}`:digits;
+    business.kind === 'supplier'
+      ? '/list-shops'
+      : business.kind === 'mechanic'
+        ? '/list-mechanics'
+        : '/workshops';
+  const firstPhone = business.phone.split(',')[0];
+  const digits = firstPhone.replace(/\D/g, '');
+  const whatsapp = digits.startsWith('263')
+    ? digits
+    : digits.startsWith('0')
+      ? `263${digits.slice(1)}`
+      : digits;
   return (
     <SiteShell>
       <main className="business-page">
@@ -47,6 +84,9 @@ export default async function Page({
             {business.kind.toUpperCase()} / AUTOHEADS SOURCE DIRECTORY
           </span>
           <h1>{business.name}</h1>
+          {business.verified ? (
+            <b className="business-verification">Autoheads Verified</b>
+          ) : null}
           <div className="business-tags">
             {business.tags.map((x) => (
               <span key={x}>{x}</span>
@@ -58,7 +98,7 @@ export default async function Page({
             <small>ADDRESS</small>
             <p>
               <MapPin />
-              {business.address || "Address not supplied"}
+              {business.address || 'Address not supplied'}
             </p>
             {business.phone && (
               <>
@@ -79,9 +119,32 @@ export default async function Page({
               were available in the source record.
             </p>
             <div className="profile-actions">
-              {firstPhone?<a data-lead-action="call" href={`tel:${firstPhone}`}><Phone/>Call</a>:null}
-              {whatsapp?<a data-lead-action="whatsapp" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"><MessageCircle/>WhatsApp</a>:null}
-              <a data-lead-action="directions" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`} target="_blank" rel="noreferrer"><MapPin/>Directions</a>
+              {firstPhone ? (
+                <a data-lead-action="call" href={`tel:${firstPhone}`}>
+                  <Phone />
+                  Call
+                </a>
+              ) : null}
+              {whatsapp ? (
+                <a
+                  data-lead-action="whatsapp"
+                  href={`https://wa.me/${whatsapp}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <MessageCircle />
+                  WhatsApp
+                </a>
+              ) : null}
+              <a
+                data-lead-action="directions"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <MapPin />
+                Directions
+              </a>
             </div>
             <Link className="back-directory" href={back}>
               <ArrowLeft />

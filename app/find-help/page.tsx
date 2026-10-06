@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, Phone, ShieldCheck } from 'lucide-react';
+import { MapPin, MessageCircle, ShieldCheck } from 'lucide-react';
 import { SiteShell } from '@/components/site-shell';
 import {
   sourceMechanics,
@@ -7,9 +7,11 @@ import {
   sourceWorkshops,
 } from '@/lib/source-directory-data';
 import { cityAreas, helpCategories } from '@/lib/search-options';
+import { readStore } from '@/lib/platform-store';
+import type { BusinessApplication } from '@/lib/platform-types';
 
 const knownCities = Object.keys(cityAreas);
-const listings = [
+const sourceListings = [
   ...sourceMechanics.map((item) => ({ ...item, type: 'Mechanic' })),
   ...sourceWorkshops.map((item) => ({ ...item, type: 'Workshop' })),
   ...sourceShops.map((item) => ({ ...item, type: 'Spares' })),
@@ -29,6 +31,30 @@ export default async function Page({
   const city = typeof params.city === 'string' ? params.city : 'Harare';
   const area = typeof params.area === 'string' ? params.area : 'All areas';
   const category = typeof params.category === 'string' ? params.category : '';
+  const provider = typeof params.provider === 'string' ? params.provider : '';
+  const applications = await readStore<BusinessApplication[]>(
+    'business-applications',
+    [],
+  );
+  const listings = [
+    ...applications
+      .filter((item) => item.status === 'Approved' && item.active)
+      .map((item) => ({
+        name: item.name,
+        details: item.otherServices || `${item.type} listed through Autoheads.`,
+        address: item.address || `${item.area || ''} ${item.location}`.trim(),
+        tags: item.categories ?? [],
+        phone: item.phone ?? '',
+        type: item.type.replace(' supplier', ''),
+        verified: item.verified,
+        featured: item.featured,
+      })),
+    ...sourceListings.map((item) => ({
+      ...item,
+      verified: false,
+      featured: false,
+    })),
+  ].sort((a, b) => Number(b.featured) - Number(a.featured));
   const matches = listings.filter((item) => {
     const haystack = `${item.tags.join(' ')} ${item.details}`.toLowerCase();
     const locationMatch =
@@ -36,7 +62,11 @@ export default async function Page({
       (area === 'All areas' ||
         item.address.toLowerCase().includes(area.toLowerCase()));
     return (
-      locationMatch && (!category || haystack.includes(category.toLowerCase()))
+      locationMatch &&
+      (!provider ||
+        item.type.toLowerCase() ===
+          provider.replace(' supplier', '').toLowerCase()) &&
+      (!category || haystack.includes(category.toLowerCase()))
     );
   });
 
@@ -52,6 +82,16 @@ export default async function Page({
               : 'Select a category to narrow the directory.'}
           </p>
           <form action="/find-help" className="results-refine">
+            <label>
+              Service provider
+              <select name="provider" defaultValue={provider}>
+                <option value="">All providers</option>
+                <option>Mechanic</option>
+                <option>Workshop</option>
+                <option value="Spares supplier">Spares supplier</option>
+                <option>Towing</option>
+              </select>
+            </label>
             <label>
               City / Town
               <select name="city" defaultValue={city}>
@@ -105,11 +145,18 @@ export default async function Page({
                 </p>
                 <div>
                   <span>
-                    <ShieldCheck /> Verification not yet confirmed
+                    <ShieldCheck />{' '}
+                    {item.verified
+                      ? 'Autoheads Verified'
+                      : 'Listed on Autoheads'}
                   </span>
                   {item.phone && (
-                    <a href={`tel:${item.phone}`}>
-                      <Phone /> Call provider
+                    <a
+                      href={`https://wa.me/${item.phone.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <MessageCircle /> WhatsApp provider
                     </a>
                   )}
                 </div>

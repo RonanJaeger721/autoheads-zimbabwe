@@ -19,20 +19,20 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           />
         </Link>
         <nav className="community-links" aria-label="Main navigation">
-          <Link href="/list-makes">
-            <span>01</span>Vehicle Guides
-          </Link>
-          <Link href="/list-shops">
-            <span>02</span>Spares
-          </Link>
           <Link href="/list-mechanics">
-            <span>03</span>Find A Mechanic
+            <span>01</span>Mechanics
           </Link>
           <Link href="/list-workshops">
-            <span>04</span>Workshops
+            <span>02</span>Workshops
+          </Link>
+          <Link href="/list-shops">
+            <span>03</span>Spares
           </Link>
           <Link href="/list-motoring-tips">
-            <span>05</span>Motoring Tips
+            <span>04</span>Motoring Tips
+          </Link>
+          <Link href="/list-makes">
+            <span>05</span>Car Guides
           </Link>
         </nav>
         <div className="community-actions">
@@ -61,18 +61,19 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             aria-label="Mobile navigation"
           >
             <small>EXPLORE AUTOHEADS</small>
-            <Link href="/list-makes">Vehicle Guides</Link>
-            <Link href="/list-shops">Spares</Link>
-            <Link href="/list-mechanics">Find A Mechanic</Link>
+            <Link href="/list-mechanics">Mechanics</Link>
             <Link href="/list-workshops">Workshops</Link>
-            <Link href="/list-posts">News</Link>
+            <Link href="/list-shops">Spares</Link>
             <Link href="/list-motoring-tips">Motoring Tips</Link>
+            <Link href="/list-makes">Car Guides</Link>
+            <Link href="/find-help?provider=Towing">Towing</Link>
+            <Link href="/list-posts">News</Link>
             <Link href="/verified">Verified</Link>
             <Link href="/about">About</Link>
             <div>
               <Link href="/login">Login</Link>
-              <Link href="/register">Sign up</Link>
-              <Link href="/apply">Apply</Link>
+              <Link href="/apply">List business</Link>
+              <Link href="/register">Join motorist</Link>
             </div>
           </nav>
         )}
@@ -109,8 +110,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <div>
           <b>For businesses</b>
           <Link href="/login">Business login</Link>
-          <Link href="/register">Join as a motorist</Link>
           <Link href="/apply">List your business</Link>
+          <Link href="/register">Join as a motorist</Link>
           <Link href="/subscribe">Subscribe</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/admin/login">Admin</Link>

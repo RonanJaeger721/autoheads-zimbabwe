@@ -33,6 +33,21 @@ export const cityAreas: Record<string, string[]> = {
   Kwekwe: ['All areas', 'CBD', 'Industrial Area'],
   Kadoma: ['All areas', 'CBD', 'Industrial Area'],
   Marondera: ['All areas', 'CBD', 'Industrial Area'],
+  Other: [
+    'All areas',
+    'Beitbridge',
+    'Bindura',
+    'Chinhoyi',
+    'Chiredzi',
+    'Kariba',
+    'Karoi',
+    'Lupane',
+    'Plumtree',
+    'Rusape',
+    'Shamva',
+    'Victoria Falls',
+    'Zvishavane',
+  ],
 };
 
 export const helpCategories = Array.from(
@@ -47,7 +62,7 @@ export const helpCategories = Array.from(
 export const providerTypes = [
   'Mechanic',
   'Workshop',
-  'Spares',
+  'Spares supplier',
   'Towing',
   'Other',
 ] as const;

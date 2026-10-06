@@ -17,6 +17,10 @@ export type BusinessApplication = {
   categories?: string[];
   otherServices?: string;
   status: ApplicationStatus;
+  active: boolean;
+  featured: boolean;
+  verified: boolean;
+  subscriptionLevel: 'Basic' | 'Standard' | 'Premium';
   submitted: string;
   createdAt: string;
   updatedAt: string;
@@ -36,4 +40,15 @@ export type MotoristAccount = {
   marketingOptIn: boolean;
   passwordHash: string;
   createdAt: string;
+};
+
+export type AdvertRecord = {
+  id: string;
+  title: string;
+  placement: 'Banner' | 'Skyscraper / Side' | 'Footer' | 'In-content';
+  imageUrl: string;
+  linkUrl: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

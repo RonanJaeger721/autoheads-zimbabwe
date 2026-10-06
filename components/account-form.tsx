@@ -231,6 +231,14 @@ export function AccountForm({
                   />
                 </label>
                 <label>
+                  Physical / business address
+                  <input
+                    required
+                    name="address"
+                    autoComplete="street-address"
+                  />
+                </label>
+                <label>
                   City / Town
                   <select
                     required
@@ -296,10 +304,6 @@ export function AccountForm({
                     rows={3}
                     placeholder="Describe a service not available in the list"
                   />
-                </label>
-                <label>
-                  Physical / business address
-                  <input required name="address" />
                 </label>
                 <div className="application-note">
                   <b>Review before publication</b>

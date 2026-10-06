@@ -69,6 +69,10 @@ export async function POST(request: NextRequest) {
     otherServices:
       typeof body.otherServices === 'string' ? body.otherServices : undefined,
     status: 'Pending',
+    active: false,
+    featured: false,
+    verified: false,
+    subscriptionLevel: 'Basic',
     submitted: authorised(request)
       ? 'Added by administrator'
       : 'Submitted through the public application form',
@@ -87,16 +91,31 @@ export async function PATCH(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as {
     id?: string;
     status?: ApplicationStatus;
+    name?: string;
+    type?: string;
+    location?: string;
+    area?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
+    active?: boolean;
+    featured?: boolean;
+    verified?: boolean;
+    subscriptionLevel?: 'Basic' | 'Standard' | 'Premium';
   } | null;
-  if (!body?.id || !body.status || !allowedStatuses.includes(body.status)) {
+  if (!body?.id || (body.status && !allowedStatuses.includes(body.status))) {
     return NextResponse.json({ error: 'Invalid update.' }, { status: 400 });
   }
   const records = await readStore<BusinessApplication[]>(storeName, []);
-  const next = records.map((record) =>
-    record.id === body.id
-      ? { ...record, status: body.status!, updatedAt: new Date().toISOString() }
-      : record,
-  );
+  const next = records.map((record) => {
+    if (record.id !== body.id) return record;
+    const changes = Object.fromEntries(
+      Object.entries(body).filter(
+        ([key, value]) => key !== 'id' && value !== undefined,
+      ),
+    );
+    return { ...record, ...changes, updatedAt: new Date().toISOString() };
+  });
   await writeStore(storeName, next);
   return NextResponse.json(next.find((record) => record.id === body.id));
 }
