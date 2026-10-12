@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ArrowLeft,
   ArrowUpRight,
   Building2,
   CarFront,
@@ -514,6 +515,13 @@ export function AdminDashboard({
               aria-label="Search administration records"
             />
           </label>
+          <Link
+            className="admin-public-link"
+            href="/"
+            aria-label="Back to public site"
+          >
+            <ArrowLeft /> <span>Back to public site</span>
+          </Link>
           <button
             type="button"
             className="admin-new"

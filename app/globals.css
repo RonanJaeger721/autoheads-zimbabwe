@@ -4722,7 +4722,7 @@ footer:after {
   background: #fff;
   border-bottom: 1px solid #dadcd8;
   display: grid;
-  grid-template-columns: 1fr minmax(220px, 350px) auto;
+  grid-template-columns: 1fr minmax(220px, 350px) auto auto;
   gap: 14px;
   align-items: center;
 }
@@ -4763,6 +4763,29 @@ footer:after {
   gap: 9px;
   align-items: center;
   font-weight: 750;
+}
+.admin-public-link {
+  min-height: 46px;
+  border: 1px solid #151716;
+  color: #151716;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.admin-public-link:hover {
+  background: #151716;
+  color: #fff;
+}
+.admin-public-link svg {
+  width: 16px;
 }
 .admin-new svg {
   width: 16px;
@@ -5316,7 +5339,7 @@ footer:after {
     place-items: center;
   }
   .admin-workspace > header {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto auto;
   }
   .admin-search {
     grid-column: 1/-1;
@@ -5369,6 +5392,18 @@ footer:after {
   }
   .admin-new svg {
     width: 18px;
+  }
+  .admin-public-link {
+    width: 46px;
+    padding: 0;
+  }
+  .admin-public-link span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
   .admin-content {
     padding: 14px;
