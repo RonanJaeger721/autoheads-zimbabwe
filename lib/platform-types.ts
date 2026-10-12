@@ -60,7 +60,9 @@ export type AdminContentModule =
   | 'Vehicle owners'
   | 'Vehicles'
   | 'News'
+  | 'News categories'
   | 'Motoring tips'
+  | 'Motoring tip categories'
   | 'Locations'
   | 'Categories';
 
@@ -72,6 +74,16 @@ export type AdminContentRecord = {
   kind: string;
   href: string;
   active: boolean;
+  email?: string;
+  phone?: string;
+  website?: string;
+  address?: string;
+  location?: string;
+  description?: string;
+  directions?: string;
+  imageUrl?: string;
+  category?: string;
+  content?: string;
   deleted?: boolean;
   createdAt: string;
   updatedAt: string;

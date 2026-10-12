@@ -52,6 +52,16 @@ type AdminRecord = {
   kind: string;
   href: string;
   active?: boolean;
+  email?: string;
+  phone?: string;
+  website?: string;
+  address?: string;
+  location?: string;
+  description?: string;
+  directions?: string;
+  imageUrl?: string;
+  category?: string;
+  content?: string;
 };
 
 type RecordGroups = Record<
@@ -61,7 +71,9 @@ type RecordGroups = Record<
   | 'Vehicle owners'
   | 'Vehicles'
   | 'News'
+  | 'News categories'
   | 'Motoring tips'
+  | 'Motoring tip categories'
   | 'Locations'
   | 'Categories',
   AdminRecord[]
@@ -77,7 +89,9 @@ const sections = [
   ['Vehicles', CarFront],
   ['Locations', MapPin],
   ['News', FileText],
+  ['News categories', Settings2],
   ['Motoring tips', FileText],
+  ['Motoring tip categories', Settings2],
   ['Categories', Settings2],
   ['Adverts', Megaphone],
 ] as const;
@@ -336,6 +350,16 @@ export function AdminDashboard({
       subtitle: formText(data, 'subtitle'),
       kind: formText(data, 'kind'),
       href: formText(data, 'href'),
+      email: formText(data, 'email'),
+      phone: formText(data, 'phone'),
+      website: formText(data, 'website'),
+      address: formText(data, 'address'),
+      location: formText(data, 'location'),
+      description: formText(data, 'description'),
+      directions: formText(data, 'directions'),
+      imageUrl: formText(data, 'imageUrl'),
+      category: formText(data, 'category'),
+      content: formText(data, 'content'),
       active: contentEditing?.active ?? true,
     };
     const response = await fetch('/api/admin/content', {
@@ -412,6 +436,16 @@ export function AdminDashboard({
     { label: 'Workshops', value: counts.workshops, icon: Building2 },
     { label: 'Vehicle guides', value: counts.vehicles, icon: CarFront },
   ];
+  const isProviderModule = ['Spares shops', 'Mechanics', 'Workshops'].includes(
+    active,
+  );
+  const isEditorialModule = ['News', 'Motoring tips'].includes(active);
+  const isTaxonomyModule = [
+    'News categories',
+    'Motoring tip categories',
+    'Locations',
+    'Categories',
+  ].includes(active);
 
   return (
     <main className="admin-shell">
@@ -1074,13 +1108,103 @@ export function AdminDashboard({
                 required
               />
             </label>
+            {isProviderModule && (
+              <div className="admin-field-grid">
+                <label>
+                  Email address
+                  <input
+                    type="email"
+                    name="email"
+                    defaultValue={contentEditing?.email ?? ''}
+                  />
+                </label>
+                <label>
+                  Phone number
+                  <input
+                    name="phone"
+                    defaultValue={contentEditing?.phone ?? ''}
+                  />
+                </label>
+                <label>
+                  Website
+                  <input
+                    type="url"
+                    name="website"
+                    defaultValue={contentEditing?.website ?? ''}
+                  />
+                </label>
+                <label>
+                  City / location
+                  <input
+                    name="location"
+                    defaultValue={contentEditing?.location ?? ''}
+                  />
+                </label>
+              </div>
+            )}
+            {isProviderModule && (
+              <label>
+                Physical address
+                <input
+                  name="address"
+                  defaultValue={contentEditing?.address ?? ''}
+                />
+              </label>
+            )}
             <label>
               Description, address or supporting detail
-              <input
+              <textarea
                 name="subtitle"
                 defaultValue={contentEditing?.subtitle ?? ''}
               />
             </label>
+            {(isProviderModule || active === 'Vehicles') && (
+              <label>
+                Full description
+                <textarea
+                  name="description"
+                  defaultValue={contentEditing?.description ?? ''}
+                />
+              </label>
+            )}
+            {isProviderModule && (
+              <label>
+                Map directions or Google Maps link
+                <textarea
+                  name="directions"
+                  defaultValue={contentEditing?.directions ?? ''}
+                />
+              </label>
+            )}
+            {(isProviderModule || active === 'Vehicles') && (
+              <label>
+                Logo or image URL
+                <input
+                  type="url"
+                  name="imageUrl"
+                  defaultValue={contentEditing?.imageUrl ?? ''}
+                />
+              </label>
+            )}
+            {isEditorialModule && (
+              <>
+                <label>
+                  Category
+                  <input
+                    name="category"
+                    defaultValue={contentEditing?.category ?? ''}
+                  />
+                </label>
+                <label>
+                  Article content
+                  <textarea
+                    className="admin-content-editor"
+                    name="content"
+                    defaultValue={contentEditing?.content ?? ''}
+                  />
+                </label>
+              </>
+            )}
             <label>
               Public page path
               <input
@@ -1090,6 +1214,12 @@ export function AdminDashboard({
                 required
               />
             </label>
+            {isTaxonomyModule && (
+              <p className="admin-form-note">
+                This taxonomy is available to the corresponding search or
+                editorial module after saving.
+              </p>
+            )}
             <button className="admin-submit">
               {contentEditing ? 'Save changes' : 'Create record'} <Check />
             </button>

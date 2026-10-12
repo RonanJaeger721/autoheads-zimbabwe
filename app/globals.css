@@ -4510,7 +4510,8 @@ footer:after {
 }
 .admin-login-form input,
 .admin-modal input,
-.admin-modal select {
+.admin-modal select,
+.admin-modal textarea {
   width: 100%;
   height: 56px;
   border: 1px solid #cfd3ce;
@@ -4521,11 +4522,35 @@ footer:after {
   text-transform: none;
   outline: none;
 }
+.admin-modal textarea {
+  min-height: 110px;
+  height: auto;
+  padding-block: 14px;
+  resize: vertical;
+}
+.admin-modal textarea.admin-content-editor {
+  min-height: 220px;
+}
 .admin-login-form input:focus,
 .admin-modal input:focus,
-.admin-modal select:focus {
+.admin-modal select:focus,
+.admin-modal textarea:focus {
   border-color: #f4511e;
   box-shadow: 0 0 0 3px rgba(244, 81, 30, 0.12);
+}
+.admin-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.admin-form-note {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #f4511e;
+  background: #fff;
+  color: #545955;
+  font-size: 13px;
+  line-height: 1.5;
 }
 .password-field {
   display: grid;
@@ -5307,6 +5332,12 @@ footer:after {
     border-bottom: 1px solid #d9dcd7;
   }
   .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-field-grid {
     grid-template-columns: 1fr;
   }
 }

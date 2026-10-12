@@ -11,6 +11,22 @@ const storeName = 'admin-content';
 const authorised = (request: NextRequest) =>
   verifyAdminSession(request.cookies.get(ADMIN_COOKIE)?.value);
 
+const optionalText = (value: unknown) =>
+  typeof value === 'string' ? value.trim() : undefined;
+
+const contentFields = (body: Partial<AdminContentRecord>) => ({
+  email: optionalText(body.email),
+  phone: optionalText(body.phone),
+  website: optionalText(body.website),
+  address: optionalText(body.address),
+  location: optionalText(body.location),
+  description: optionalText(body.description),
+  directions: optionalText(body.directions),
+  imageUrl: optionalText(body.imageUrl),
+  category: optionalText(body.category),
+  content: optionalText(body.content),
+});
+
 export async function GET(request: NextRequest) {
   if (!authorised(request))
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -39,6 +55,7 @@ export async function POST(request: NextRequest) {
     kind: body.kind.trim(),
     href: body.href?.trim() || '/',
     active: body.active ?? true,
+    ...contentFields(body),
     createdAt: now,
     updatedAt: now,
   };
@@ -69,6 +86,7 @@ export async function PATCH(request: NextRequest) {
     kind: body.kind?.trim() ?? existing?.kind ?? 'Record',
     href: body.href?.trim() ?? existing?.href ?? '/',
     active: body.active ?? existing?.active ?? true,
+    ...contentFields({ ...existing, ...body }),
     deleted: body.deleted ?? existing?.deleted,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
@@ -103,6 +121,7 @@ export async function DELETE(request: NextRequest) {
     kind: existing?.kind ?? 'Record',
     href: existing?.href ?? '/',
     active: false,
+    ...contentFields(existing ?? {}),
     deleted: true,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
