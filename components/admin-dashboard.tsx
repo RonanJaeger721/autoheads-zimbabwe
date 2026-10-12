@@ -27,6 +27,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import type {
+  AdminContentModule,
+  AdminContentRecord,
   AdvertRecord,
   ApplicationStatus,
   BusinessApplication,
@@ -49,20 +51,33 @@ type AdminRecord = {
   subtitle: string;
   kind: string;
   href: string;
+  active?: boolean;
 };
 
 type RecordGroups = Record<
-  'Businesses' | 'Vehicles' | 'Editorial' | 'Locations' | 'Categories',
+  | 'Spares shops'
+  | 'Mechanics'
+  | 'Workshops'
+  | 'Vehicle owners'
+  | 'Vehicles'
+  | 'News'
+  | 'Motoring tips'
+  | 'Locations'
+  | 'Categories',
   AdminRecord[]
 >;
 
 const sections = [
   ['Overview', CircleGauge],
   ['Applications', FileText],
-  ['Businesses', Building2],
+  ['Spares shops', Store],
+  ['Mechanics', Wrench],
+  ['Workshops', Building2],
+  ['Vehicle owners', CarFront],
   ['Vehicles', CarFront],
-  ['Editorial', FileText],
   ['Locations', MapPin],
+  ['News', FileText],
+  ['Motoring tips', FileText],
   ['Categories', Settings2],
   ['Adverts', Megaphone],
 ] as const;
@@ -91,6 +106,15 @@ export function AdminDashboard({
   const [pendingDelete, setPendingDelete] = useState('');
   const [adverts, setAdverts] = useState<AdvertRecord[]>([]);
   const [showAdvert, setShowAdvert] = useState(false);
+  const [contentOverrides, setContentOverrides] = useState<
+    AdminContentRecord[]
+  >([]);
+  const [showContent, setShowContent] = useState(false);
+  const [contentEditing, setContentEditing] =
+    useState<AdminContentRecord | null>(null);
+  const [recordStatus, setRecordStatus] = useState<
+    'All' | 'Active' | 'Deactivated'
+  >('All');
 
   useEffect(() => {
     void fetch('/api/applications', { cache: 'no-store' })
@@ -101,6 +125,11 @@ export function AdminDashboard({
       .then((response) => response.json())
       .then((items: AdvertRecord[]) =>
         setAdverts(Array.isArray(items) ? items : []),
+      );
+    void fetch('/api/admin/content', { cache: 'no-store' })
+      .then((response) => response.json())
+      .then((items: AdminContentRecord[]) =>
+        setContentOverrides(Array.isArray(items) ? items : []),
       );
   }, []);
 
@@ -164,6 +193,25 @@ export function AdminDashboard({
     [applications, query],
   );
 
+  const managedRecords = useMemo(() => {
+    const contentModules = Object.keys(records) as AdminContentModule[];
+    return Object.fromEntries(
+      contentModules.map((contentModule) => {
+        const overrides = contentOverrides.filter(
+          (item) => item.module === contentModule,
+        );
+        const overrideIds = new Set(overrides.map((item) => item.id));
+        const seeded = records[contentModule]
+          .filter((item) => !overrideIds.has(item.id))
+          .map((item) => ({ ...item, active: true }));
+        return [
+          contentModule,
+          [...overrides.filter((item) => !item.deleted), ...seeded],
+        ];
+      }),
+    ) as RecordGroups;
+  }, [contentOverrides, records]);
+
   const activeRecords = useMemo(() => {
     if (
       active === 'Overview' ||
@@ -171,16 +219,22 @@ export function AdminDashboard({
       active === 'Adverts'
     )
       return [];
-    return records[active as keyof RecordGroups].filter((item) =>
-      `${item.title} ${item.subtitle} ${item.kind}`
+    return managedRecords[active as keyof RecordGroups].filter((item) => {
+      const matchesQuery = `${item.title} ${item.subtitle} ${item.kind}`
         .toLowerCase()
-        .includes(query.toLowerCase()),
-    );
-  }, [active, query, records]);
+        .includes(query.toLowerCase());
+      const matchesStatus =
+        recordStatus === 'All' ||
+        (recordStatus === 'Active' && item.active !== false) ||
+        (recordStatus === 'Deactivated' && item.active === false);
+      return matchesQuery && matchesStatus;
+    });
+  }, [active, managedRecords, query, recordStatus]);
 
   const selectSection = (label: string) => {
     setActive(label);
     setQuery('');
+    setRecordStatus('All');
     setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -271,6 +325,87 @@ export function AdminDashboard({
     setPendingDelete('');
   }
 
+  async function saveContent(event: React.SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const contentModule = active as AdminContentModule;
+    const data = new FormData(event.currentTarget);
+    const payload = {
+      id: contentEditing?.id,
+      module: contentModule,
+      title: formText(data, 'title'),
+      subtitle: formText(data, 'subtitle'),
+      kind: formText(data, 'kind'),
+      href: formText(data, 'href'),
+      active: contentEditing?.active ?? true,
+    };
+    const response = await fetch('/api/admin/content', {
+      method: contentEditing ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) return;
+    const record = (await response.json()) as AdminContentRecord;
+    setContentOverrides((items) => [
+      record,
+      ...items.filter((item) => item.id !== record.id),
+    ]);
+    setShowContent(false);
+    setContentEditing(null);
+    setNotice(contentEditing ? 'Record saved.' : 'Record added.');
+  }
+
+  async function updateContent(
+    item: AdminRecord,
+    changes: Partial<AdminContentRecord>,
+  ) {
+    const contentModule = active as AdminContentModule;
+    const response = await fetch('/api/admin/content', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...item,
+        module: contentModule,
+        active: item.active ?? true,
+        ...changes,
+      }),
+    });
+    if (!response.ok) return;
+    const record = (await response.json()) as AdminContentRecord;
+    setContentOverrides((items) => [
+      record,
+      ...items.filter((entry) => entry.id !== record.id),
+    ]);
+    setNotice(`${record.title} updated.`);
+  }
+
+  async function deleteContent(item: AdminRecord) {
+    if (pendingDelete !== item.id) {
+      setPendingDelete(item.id);
+      return;
+    }
+    const contentModule = active as AdminContentModule;
+    const response = await fetch(
+      `/api/admin/content?id=${encodeURIComponent(item.id)}&module=${encodeURIComponent(contentModule)}`,
+      { method: 'DELETE' },
+    );
+    if (response.ok) {
+      const now = new Date().toISOString();
+      setContentOverrides((items) => [
+        {
+          ...item,
+          module: contentModule,
+          active: false,
+          deleted: true,
+          createdAt: now,
+          updatedAt: now,
+        },
+        ...items.filter((entry) => entry.id !== item.id),
+      ]);
+      setNotice('Record deleted.');
+    }
+    setPendingDelete('');
+  }
+
   const moduleCards = [
     { label: 'Mechanics', value: counts.mechanics, icon: Wrench },
     { label: 'Spare suppliers', value: counts.shops, icon: Store },
@@ -353,8 +488,13 @@ export function AdminDashboard({
                 setShowAdvert(true);
                 return;
               }
-              if (active !== 'Applications') selectSection('Applications');
-              setShowNew(true);
+              if (active === 'Applications' || active === 'Overview') {
+                if (active !== 'Applications') selectSection('Applications');
+                setShowNew(true);
+                return;
+              }
+              setContentEditing(null);
+              setShowContent(true);
             }}
           >
             <Plus /> {active === 'Adverts' ? 'Add advert' : 'Add record'}
@@ -455,9 +595,11 @@ export function AdminDashboard({
                         selectSection(
                           label === 'Makes'
                             ? 'Vehicles'
-                            : label === 'Articles' || label === 'Motoring tips'
-                              ? 'Editorial'
-                              : String(label),
+                            : label === 'Articles'
+                              ? 'News'
+                              : label === 'Motoring tips'
+                                ? 'Motoring tips'
+                                : String(label),
                         )
                       }
                     >
@@ -597,6 +739,21 @@ export function AdminDashboard({
                   </div>
                   <strong>{activeRecords.length} records</strong>
                 </header>
+                <div
+                  className="admin-record-filters"
+                  aria-label="Record status"
+                >
+                  {(['All', 'Active', 'Deactivated'] as const).map((status) => (
+                    <button
+                      type="button"
+                      className={recordStatus === status ? 'active' : ''}
+                      onClick={() => setRecordStatus(status)}
+                      key={status}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
                 <div className="admin-record-list">
                   {activeRecords.length ? (
                     activeRecords.map((item, index) => (
@@ -612,13 +769,51 @@ export function AdminDashboard({
                           <h3>{item.title}</h3>
                           <p>{item.subtitle}</p>
                         </div>
-                        <Link
-                          href={item.href}
-                          target="_blank"
-                          aria-label={`Open ${item.title} on public website`}
-                        >
-                          Preview <ArrowUpRight />
-                        </Link>
+                        <div className="admin-record-controls admin-content-controls">
+                          <button
+                            type="button"
+                            className={item.active !== false ? 'is-on' : ''}
+                            onClick={() =>
+                              void updateContent(item, {
+                                active: item.active === false,
+                              })
+                            }
+                          >
+                            {item.active === false ? 'Deactivated' : 'Active'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setContentEditing({
+                                ...item,
+                                module: active as AdminContentModule,
+                                active: item.active ?? true,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString(),
+                              });
+                              setShowContent(true);
+                            }}
+                          >
+                            <Pencil /> Edit
+                          </button>
+                          <Link
+                            href={item.href}
+                            target="_blank"
+                            aria-label={`Open ${item.title} on public website`}
+                          >
+                            Preview <ArrowUpRight />
+                          </Link>
+                          <button
+                            type="button"
+                            className="is-danger"
+                            onClick={() => void deleteContent(item)}
+                          >
+                            <Trash2 />{' '}
+                            {pendingDelete === item.id
+                              ? 'Confirm delete'
+                              : 'Delete'}
+                          </button>
+                        </div>
                       </article>
                     ))
                   ) : (
@@ -836,6 +1031,67 @@ export function AdminDashboard({
             </label>
             <button className="admin-submit">
               Create advert <Check />
+            </button>
+          </form>
+        </dialog>
+      )}
+
+      {showContent && active !== 'Overview' && active !== 'Applications' && (
+        <dialog className="admin-modal" aria-modal="true" open>
+          <form onSubmit={saveContent}>
+            <header>
+              <div>
+                <span>{contentEditing ? 'EDIT RECORD' : 'NEW RECORD'}</span>
+                <h2>
+                  {contentEditing ? contentEditing.title : `Add to ${active}`}
+                </h2>
+              </div>
+              <button
+                type="button"
+                aria-label="Close content form"
+                onClick={() => {
+                  setShowContent(false);
+                  setContentEditing(null);
+                }}
+              >
+                <X />
+              </button>
+            </header>
+            <label>
+              Name or title
+              <input
+                name="title"
+                defaultValue={contentEditing?.title ?? ''}
+                required
+              />
+            </label>
+            <label>
+              Record type
+              <input
+                name="kind"
+                defaultValue={contentEditing?.kind ?? ''}
+                placeholder="Workshop, vehicle make, article…"
+                required
+              />
+            </label>
+            <label>
+              Description, address or supporting detail
+              <input
+                name="subtitle"
+                defaultValue={contentEditing?.subtitle ?? ''}
+              />
+            </label>
+            <label>
+              Public page path
+              <input
+                name="href"
+                defaultValue={contentEditing?.href ?? '/'}
+                placeholder="/find-help"
+                required
+              />
+            </label>
+            <button className="admin-submit">
+              {contentEditing ? 'Save changes' : 'Create record'} <Check />
             </button>
           </form>
         </dialog>

@@ -97,17 +97,7 @@ export function GlobalSearch() {
       </div>
       <div className="route-footer">
         <span>Provider first. Location second. The right service next.</span>
-        <div
-          className="finder-routes"
-          aria-label="Autoheads directory sections"
-        >
-          <Link href="/list-mechanics">Mechanics</Link>
-          <Link href="/list-workshops">Workshops</Link>
-          <Link href="/list-shops">Spares</Link>
-          <Link href="/list-motoring-tips">Motoring tips</Link>
-          <Link href="/list-makes">Car guides</Link>
-          <Link href="/find-help?provider=Towing">Towing</Link>
-        </div>
+        <small>One search. One clear route to the right provider.</small>
       </div>
     </section>
   );

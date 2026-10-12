@@ -52,3 +52,27 @@ export type AdvertRecord = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type AdminContentModule =
+  | 'Spares shops'
+  | 'Mechanics'
+  | 'Workshops'
+  | 'Vehicle owners'
+  | 'Vehicles'
+  | 'News'
+  | 'Motoring tips'
+  | 'Locations'
+  | 'Categories';
+
+export type AdminContentRecord = {
+  id: string;
+  module: AdminContentModule;
+  title: string;
+  subtitle: string;
+  kind: string;
+  href: string;
+  active: boolean;
+  deleted?: boolean;
+  createdAt: string;
+  updatedAt: string;
+};

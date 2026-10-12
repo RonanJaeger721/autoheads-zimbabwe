@@ -36,29 +36,28 @@ export default async function AdminPage() {
         categories: categories.length,
       }}
       records={{
-        Businesses: [
-          ...sourceMechanics.map((item, index) => ({
-            id: `mechanic-${index}`,
-            title: item.name,
-            subtitle: item.address || 'Zimbabwe',
-            kind: 'Mechanic',
-            href: '/list-mechanics',
-          })),
-          ...sourceShops.map((item, index) => ({
-            id: `shop-${index}`,
-            title: item.name,
-            subtitle: item.address || 'Zimbabwe',
-            kind: 'Spares supplier',
-            href: '/list-shops',
-          })),
-          ...sourceWorkshops.map((item, index) => ({
-            id: `workshop-${index}`,
-            title: item.name,
-            subtitle: item.address || 'Zimbabwe',
-            kind: 'Workshop',
-            href: '/list-workshops',
-          })),
-        ],
+        'Spares shops': sourceShops.map((item, index) => ({
+          id: `shop-${index}`,
+          title: item.name,
+          subtitle: item.address || 'Zimbabwe',
+          kind: 'Spares supplier',
+          href: '/list-shops',
+        })),
+        Mechanics: sourceMechanics.map((item, index) => ({
+          id: `mechanic-${index}`,
+          title: item.name,
+          subtitle: item.address || 'Zimbabwe',
+          kind: 'Mechanic',
+          href: '/list-mechanics',
+        })),
+        Workshops: sourceWorkshops.map((item, index) => ({
+          id: `workshop-${index}`,
+          title: item.name,
+          subtitle: item.address || 'Zimbabwe',
+          kind: 'Workshop',
+          href: '/list-workshops',
+        })),
+        'Vehicle owners': [],
         Vehicles: vehicles.map((item) => ({
           id: `vehicle-${item.makeId}-${item.id}`,
           title: `${item.make} ${item.name}`,
@@ -66,22 +65,20 @@ export default async function AdminPage() {
           kind: 'Vehicle guide',
           href: `/vehicle/${item.makeId}/${item.id}`,
         })),
-        Editorial: [
-          ...posts.map((item) => ({
-            id: `post-${item.id}`,
-            title: item.title,
-            subtitle: item.excerpt,
-            kind: 'Article',
-            href: `/view-${item.id}`,
-          })),
-          ...motoringTips.map((item) => ({
-            id: `tip-${item.id}`,
-            title: item.title,
-            subtitle: item.excerpt,
-            kind: 'Motoring tip',
-            href: '/list-motoring-tips',
-          })),
-        ],
+        News: posts.map((item) => ({
+          id: `post-${item.id}`,
+          title: item.title,
+          subtitle: item.excerpt,
+          kind: 'Article',
+          href: `/view-${item.id}`,
+        })),
+        'Motoring tips': motoringTips.map((item) => ({
+          id: `tip-${item.id}`,
+          title: item.title,
+          subtitle: item.excerpt,
+          kind: 'Motoring tip',
+          href: '/list-motoring-tips',
+        })),
         Locations: [
           'Harare',
           'Bulawayo',
