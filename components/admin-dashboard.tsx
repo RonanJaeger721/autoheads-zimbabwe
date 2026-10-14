@@ -76,7 +76,8 @@ type RecordGroups = Record<
   | 'Motoring tips'
   | 'Motoring tip categories'
   | 'Locations'
-  | 'Categories',
+  | 'Spares categories'
+  | 'Mechanic / workshop categories',
   AdminRecord[]
 >;
 
@@ -93,7 +94,8 @@ const sections = [
   ['News categories', Settings2],
   ['Motoring tips', FileText],
   ['Motoring tip categories', Settings2],
-  ['Categories', Settings2],
+  ['Spares categories', Settings2],
+  ['Mechanic / workshop categories', Settings2],
   ['Adverts', Megaphone],
 ] as const;
 
@@ -249,7 +251,17 @@ export function AdminDashboard({
   const selectSection = (label: string) => {
     setActive(label);
     setQuery('');
-    setRecordStatus('All');
+    setRecordStatus(
+      [
+        'Spares shops',
+        'Mechanics',
+        'Workshops',
+        'Spares categories',
+        'Mechanic / workshop categories',
+      ].includes(label)
+        ? 'Active'
+        : 'All',
+    );
     setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -368,7 +380,13 @@ export function AdminDashboard({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+      const error = (await response.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      setNotice(error?.error || 'The record could not be saved.');
+      return;
+    }
     const record = (await response.json()) as AdminContentRecord;
     setContentOverrides((items) => [
       record,
@@ -394,13 +412,22 @@ export function AdminDashboard({
         ...changes,
       }),
     });
-    if (!response.ok) return;
+    if (!response.ok) {
+      setNotice('The status could not be changed. Please try again.');
+      return;
+    }
     const record = (await response.json()) as AdminContentRecord;
     setContentOverrides((items) => [
       record,
       ...items.filter((entry) => entry.id !== record.id),
     ]);
-    setNotice(`${record.title} updated.`);
+    setNotice(
+      changes.active === false
+        ? `${record.title} deactivated and removed from the public directory.`
+        : changes.active === true
+          ? `${record.title} restored to the public directory.`
+          : `${record.title} updated.`,
+    );
   }
 
   async function deleteContent(item: AdminRecord) {
@@ -427,6 +454,8 @@ export function AdminDashboard({
         ...items.filter((entry) => entry.id !== item.id),
       ]);
       setNotice('Record deleted.');
+    } else {
+      setNotice('The record could not be deleted. Please try again.');
     }
     setPendingDelete('');
   }
@@ -445,7 +474,8 @@ export function AdminDashboard({
     'News categories',
     'Motoring tip categories',
     'Locations',
-    'Categories',
+    'Spares categories',
+    'Mechanic / workshop categories',
   ].includes(active);
 
   return (
@@ -625,7 +655,7 @@ export function AdminDashboard({
                   </header>
                   {[
                     ['Makes', counts.makes],
-                    ['Categories', counts.categories],
+                    ['Spares categories', counts.categories],
                     ['Articles', counts.posts],
                     ['Motoring tips', counts.tips],
                     ['Locations', 9],
@@ -775,8 +805,8 @@ export function AdminDashboard({
                     <span>CONTENT MODULE / {active.toUpperCase()}</span>
                     <h2>{active}</h2>
                     <p>
-                      Search the live catalogue and open any record on the
-                      public website.
+                      Active records appear on the public website. Deactivated
+                      records are hidden but can be restored here.
                     </p>
                   </div>
                   <strong>{activeRecords.length} records</strong>
@@ -821,7 +851,7 @@ export function AdminDashboard({
                               })
                             }
                           >
-                            {item.active === false ? 'Deactivated' : 'Active'}
+                            {item.active === false ? 'Restore' : 'Deactivate'}
                           </button>
                           <button
                             type="button"
@@ -1149,6 +1179,16 @@ export function AdminDashboard({
                   />
                 </label>
               </div>
+            )}
+            {isProviderModule && (
+              <label>
+                Categories or services
+                <input
+                  name="category"
+                  defaultValue={contentEditing?.category ?? ''}
+                  placeholder="Comma-separated, e.g. Brakes, Diagnostics"
+                />
+              </label>
             )}
             {isProviderModule && (
               <label>

@@ -1,19 +1,18 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { ArrowLeft, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { SiteShell } from '@/components/site-shell';
-import {
-  sourceMechanics,
-  sourceShops,
-  sourceWorkshops,
-} from '@/lib/source-directory-data';
+import { getAllDirectoryListings } from '@/lib/directory-admin-data';
 import { readStore } from '@/lib/platform-store';
 import type { BusinessApplication } from '@/lib/platform-types';
+export const dynamic = 'force-dynamic';
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const { mechanics, workshops, spares } = await getAllDirectoryListings();
   const applications = await readStore<BusinessApplication[]>(
     'business-applications',
     [],
@@ -31,37 +30,37 @@ export default async function Page({
         verified: item.verified,
         featured: item.featured,
       })),
-    ...sourceShops.map((x) => ({
+    ...spares.map((x) => ({
       ...x,
       kind: 'supplier',
       verified: false,
       featured: false,
     })),
-    ...sourceMechanics.map((x) => ({
+    ...mechanics.map((x) => ({
       ...x,
       kind: 'mechanic',
       verified: false,
       featured: false,
     })),
-    ...sourceWorkshops.map((x) => ({
+    ...workshops.map((x) => ({
       ...x,
       kind: 'workshop',
       verified: false,
       featured: false,
     })),
   ];
-  const business =
-    all.find(
-      (s) =>
-        s.name.toLowerCase().replaceAll(' ', '-').replaceAll('&', 'and') ===
-        slug,
-    ) ?? all[0];
+  const business = all.find(
+    (s) =>
+      s.name.toLowerCase().replaceAll(' ', '-').replaceAll('&', 'and') ===
+      slug,
+  );
+  if (!business) notFound();
   const back =
     business.kind === 'supplier'
       ? '/list-shops'
       : business.kind === 'mechanic'
         ? '/list-mechanics'
-        : '/workshops';
+        : '/list-workshops';
   const firstPhone = business.phone.split(',')[0];
   const digits = firstPhone.replace(/\D/g, '');
   const whatsapp = digits.startsWith('263')

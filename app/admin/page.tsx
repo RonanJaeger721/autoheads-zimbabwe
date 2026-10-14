@@ -10,8 +10,10 @@ import {
 } from '@/lib/autoheads-data';
 import {
   sourceMechanics,
+  sourceMechanicCategories,
   sourceShops,
   sourceWorkshops,
+  sourceWorkshopCategories,
 } from '@/lib/source-directory-data';
 import { ADMIN_COOKIE, verifyAdminSession } from '@/lib/admin-auth';
 
@@ -42,6 +44,10 @@ export default async function AdminPage() {
           subtitle: item.address || 'Zimbabwe',
           kind: 'Spares supplier',
           href: '/list-shops',
+          address: item.address,
+          phone: item.phone,
+          description: item.details,
+          category: item.tags.join(', '),
         })),
         Mechanics: sourceMechanics.map((item, index) => ({
           id: `mechanic-${index}`,
@@ -49,6 +55,10 @@ export default async function AdminPage() {
           subtitle: item.address || 'Zimbabwe',
           kind: 'Mechanic',
           href: '/list-mechanics',
+          address: item.address,
+          phone: item.phone,
+          description: item.details,
+          category: item.tags.join(', '),
         })),
         Workshops: sourceWorkshops.map((item, index) => ({
           id: `workshop-${index}`,
@@ -56,6 +66,10 @@ export default async function AdminPage() {
           subtitle: item.address || 'Zimbabwe',
           kind: 'Workshop',
           href: '/list-workshops',
+          address: item.address,
+          phone: item.phone,
+          description: item.details,
+          category: item.tags.join(', '),
         })),
         'Vehicle owners': [],
         Vehicles: vehicles.map((item) => ({
@@ -131,13 +145,24 @@ export default async function AdminPage() {
           kind: 'City / town',
           href: `/find-help?location=${encodeURIComponent(title)}`,
         })),
-        Categories: categories.map((title, index) => ({
-          id: `category-${index}`,
+        'Spares categories': categories.map((title, index) => ({
+          id: `spares-category-${index}`,
           title,
-          subtitle: 'Used by the location-aware directory search',
-          kind: 'Service category',
+          subtitle: 'Used by spares listings and directory search',
+          kind: 'Spares category',
           href: `/find-help?category=${encodeURIComponent(title)}`,
         })),
+        'Mechanic / workshop categories': Array.from(
+          new Set([...sourceMechanicCategories, ...sourceWorkshopCategories]),
+        )
+          .sort((a, b) => a.localeCompare(b))
+          .map((title, index) => ({
+            id: `service-category-${index}`,
+            title,
+            subtitle: 'Used by mechanic and workshop directory search',
+            kind: 'Mechanic / workshop category',
+            href: `/find-help?category=${encodeURIComponent(title)}`,
+          })),
       }}
     />
   );

@@ -64,7 +64,8 @@ export type AdminContentModule =
   | 'Motoring tips'
   | 'Motoring tip categories'
   | 'Locations'
-  | 'Categories';
+  | 'Spares categories'
+  | 'Mechanic / workshop categories';
 
 export type AdminContentRecord = {
   id: string;

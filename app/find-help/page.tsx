@@ -1,21 +1,13 @@
 import Link from 'next/link';
 import { MapPin, MessageCircle, ShieldCheck } from 'lucide-react';
 import { SiteShell } from '@/components/site-shell';
-import {
-  sourceMechanics,
-  sourceShops,
-  sourceWorkshops,
-} from '@/lib/source-directory-data';
-import { cityAreas, helpCategories } from '@/lib/search-options';
+import { getAllDirectoryListings, getDirectoryCategories } from '@/lib/directory-admin-data';
+import { cityAreas } from '@/lib/search-options';
 import { readStore } from '@/lib/platform-store';
 import type { BusinessApplication } from '@/lib/platform-types';
 
 const knownCities = Object.keys(cityAreas);
-const sourceListings = [
-  ...sourceMechanics.map((item) => ({ ...item, type: 'Mechanic' })),
-  ...sourceWorkshops.map((item) => ({ ...item, type: 'Workshop' })),
-  ...sourceShops.map((item) => ({ ...item, type: 'Spares' })),
-];
+export const dynamic = 'force-dynamic';
 
 const cityFor = (address: string) =>
   knownCities.find((city) =>
@@ -32,6 +24,20 @@ export default async function Page({
   const area = typeof params.area === 'string' ? params.area : 'All areas';
   const category = typeof params.category === 'string' ? params.category : '';
   const provider = typeof params.provider === 'string' ? params.provider : '';
+  const [{ mechanics, workshops, spares }, sparesCategories, serviceCategories] =
+    await Promise.all([
+      getAllDirectoryListings(),
+      getDirectoryCategories('Spares categories'),
+      getDirectoryCategories('Mechanic / workshop categories'),
+    ]);
+  const helpCategories = Array.from(
+    new Set([...sparesCategories, ...serviceCategories, 'Towing']),
+  ).sort((a, b) => a.localeCompare(b));
+  const sourceListings = [
+    ...mechanics.map((item) => ({ ...item, type: 'Mechanic' })),
+    ...workshops.map((item) => ({ ...item, type: 'Workshop' })),
+    ...spares.map((item) => ({ ...item, type: 'Spares' })),
+  ];
   const applications = await readStore<BusinessApplication[]>(
     'business-applications',
     [],
